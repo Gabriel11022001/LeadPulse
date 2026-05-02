@@ -8,6 +8,8 @@ interface BotaoProps {
   habilitado?: boolean;
   carregando?: boolean;
   botaoLogin?: boolean;
+  margemTopo?: number;
+  margemBaixo?: number;
 
 }
 
@@ -17,13 +19,18 @@ const Botao = ({
   habilitado,
   carregando,
   onExecutar,
-  botaoLogin = false
+  botaoLogin = false,
+  margemTopo,
+  margemBaixo
 }: BotaoProps) => {
 
   return <Pressable
     style={ [
       styles.botao,
-      botaoLogin && { width: "100%", marginStart: 0, marginEnd: 0, marginTop: 20 }
+      botaoLogin && { width: "100%", marginStart: 0, marginEnd: 0, marginTop: 20 },
+      (!habilitado && !carregando) && styles.botaoDesabilitado,
+      margemTopo != undefined && { marginTop: margemTopo },
+      margemBaixo != undefined && { marginBottom: margemBaixo }
     ] }
     disabled={ !habilitado }
     onPress={ onExecutar }>

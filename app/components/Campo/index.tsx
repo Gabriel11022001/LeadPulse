@@ -1,6 +1,8 @@
 import config from '@/app/config';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Pressable, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 
@@ -8,7 +10,10 @@ export enum TipoCampo {
 
   email,
   senha,
-  default
+  default,
+  telefone,
+  data,
+  genero
 
 }
 
@@ -56,7 +61,13 @@ const Campo = ({
       return <AntDesign name="lock" size={ 24 } color={ corIcone } />;
     }
 
-    return null;
+    // icone do campo de telefone
+    if (tipoCampo === TipoCampo.telefone) {
+
+      return <Feather name="phone-call" size={ 24 } color={ corIcone } />;
+    }
+
+    return <MaterialIcons name="abc" size={ 24 } color={ corIcone } />;
   }
 
   return <View style={ [
@@ -66,7 +77,8 @@ const Campo = ({
     <Text style={ styles.titulo }>{ titulo }</Text>
     <View style={ [
       styles.containerConteudoIcone,
-      erro && styles.campoComErro
+      erro && styles.campoComErro,
+      !habilitado && styles.campoDesabilitado
     ] }>
       { getIconeCampo() }
       <TextInput

@@ -22,6 +22,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center"
+  },
+  botaoDesabilitado: {
+    opacity: 0.5
   }
 
 });

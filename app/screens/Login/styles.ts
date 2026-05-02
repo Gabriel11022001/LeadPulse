@@ -33,6 +33,49 @@ const styles = StyleSheet.create({
   subtitulo: {
     color: "#fff",
     fontSize: 16
+  },
+  containerLembrarEsqueciSenha: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 10
+  },
+  txtEsqueceuSenha: {
+    color: config.corPrimaria,
+    fontWeight: "bold",
+    fontSize: 15
+  },
+  checkBoxLembrar: {
+    width: 22,
+    height: 22,
+    borderRadius: 5,
+    backgroundColor: config.corBordas,
+    marginEnd: 6,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  containerLembrar: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  checkBoxLembrarHabilitado: {
+    backgroundColor: config.corPrimaria
+  },
+  containerNaoTemConta: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    flexDirection: "row",
+    marginBottom: 30
+  },
+  txtCadastrese: {
+    color: config.corPrimaria,
+    fontWeight: "bold",
+    marginStart: 6,
+    fontSize: 15
   }
 
 });

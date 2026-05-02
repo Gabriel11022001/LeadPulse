@@ -1,13 +1,14 @@
 import Botao from "@/app/components/Botao";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseUp from "@/app/components/LeadPulseUp";
+import Feather from "@expo/vector-icons/Feather";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./styles";
 
 // tela de login do app
-const Login = () => {
+const Login = ({ navigation }: any) => {
  
   const [ carregando, setCarregando ] = useState<boolean>(false);
   const [ email, setEmail ] = useState<string>("");
@@ -16,6 +17,7 @@ const Login = () => {
   const [ erroSenha, setErroSenha ] = useState<string>("");
   const [ senhaVisivel, setSenhaVisivel ] = useState<boolean>(false);
   const [ erroGeral, setErroGeral ] = useState<string>("");
+  const [ lembrar, setLembrar ] = useState<boolean>(false);
 
   const onDigitarEmail = (emailDigitado: string): void => {
     setErroEmail("");
@@ -49,9 +51,21 @@ const Login = () => {
       setCarregando(true);
       setErroGeral("");
     } catch (e) {
-
+      // apresentar alerta de erro para o usuário
+      setErroGeral(`Erro ao tentar-se efetuar o login: ${ e }`);
     } finally {
       setCarregando(false);
+    }
+
+  }
+
+  // salvar os dados do login em memória
+  const salvarDadosLoginLocalmente = async () => {
+    setLembrar(!lembrar);
+
+    try {
+    } catch (e) {
+
     }
 
   }
@@ -92,15 +106,24 @@ const Login = () => {
               onVisualizarSenha={ () => {
                 setSenhaVisivel(!senhaVisivel);
               } } />
-            <View>
+            <View style={ styles.containerLembrarEsqueciSenha }>
               { /** opção de recordar a senha */ }
-              <View>
-                <Pressable />
+              <View style={ styles.containerLembrar }>
+                <Pressable style={ [
+                  styles.checkBoxLembrar,
+                  lembrar && styles.checkBoxLembrarHabilitado
+                ] } onPress={ () => {
+                  salvarDadosLoginLocalmente();
+                } }>
+                  { lembrar && <Feather name="check" size={ 17 } color="#fff" /> }
+                </Pressable>
                 <Text>Lembrar-me</Text>
               </View>
               { /** botão para recuperar senha */ }
-              <Pressable>
-                <Text>Esqueceu a senha?</Text>
+              <Pressable onPress={ () => {
+                // redirecionar a tela de recuperação de senha
+              } }>
+                <Text style={ styles.txtEsqueceuSenha }>Esqueceu a senha?</Text>
               </Pressable>
             </View>
             { /** botão para efetuar login */ }
@@ -112,6 +135,14 @@ const Login = () => {
               onExecutar={ () => {
                 efetuarLogin();
               } } />
+            <View style={ styles.containerNaoTemConta }>
+              <Text>Ainda não têm uma conta?</Text>
+              <Pressable onPress={ () => {
+                navigation.navigate("cadastro_perfil")
+              } }>
+                <Text style={ styles.txtCadastrese }>Cadastre-se</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </ScrollView>

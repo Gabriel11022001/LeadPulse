@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
+import CadastroPerfil from '../screens/CadastroPerfil';
 import Login from '../screens/Login';
 import SplashScreen from '../screens/SplashScreen';
 
@@ -24,6 +25,10 @@ const Navigation = () => {
     {
       nome: "login",
       componente: Login
+    },
+    {
+      nome: "cadastro_perfil",
+      componente: CadastroPerfil
     }
   ];
 
@@ -31,17 +36,9 @@ const Navigation = () => {
     <Stack.Navigator initialRouteName='splash'>
       { telas.map(({ nome, componente }) => {
 
-        if (nome === "splash" || nome === "login") {
-
-          return <Stack.Screen
-            name={ nome }
-            component={ componente }
-            options={ {
-              headerShown: false
-            } } />
-        }
-
-        return <Stack.Screen name={ nome } component={ componente } />
+        return <Stack.Screen name={ nome } component={ componente } options={ {
+          headerShown: false
+        } } />
       }) }
     </Stack.Navigator>
   </NavigationContainer>

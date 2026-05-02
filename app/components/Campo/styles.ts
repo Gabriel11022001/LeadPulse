@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
     borderColor: config.corBordas,
     borderWidth: 1,
     borderRadius: 12,
-    marginTop: 7
+    marginTop: 7,
+    backgroundColor: "#fff"
   },
   campoConteudo: {
     flex: 1,
@@ -40,6 +41,9 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 15,
     marginTop: 5
+  },
+  campoDesabilitado: {
+    opacity: 0.5
   }
 
 });
