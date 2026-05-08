@@ -50,6 +50,8 @@ const Login = ({ navigation }: any) => {
     try {
       setCarregando(true);
       setErroGeral("");
+
+      navigation.replace("home");
     } catch (e) {
       // apresentar alerta de erro para o usuário
       setErroGeral(`Erro ao tentar-se efetuar o login: ${ e }`);
@@ -64,6 +66,7 @@ const Login = ({ navigation }: any) => {
     setLembrar(!lembrar);
 
     try {
+      
     } catch (e) {
 
     }

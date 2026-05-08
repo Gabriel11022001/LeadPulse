@@ -13,7 +13,9 @@ export enum TipoCampo {
   default,
   telefone,
   data,
-  genero
+  genero,
+  cpf,
+  cnpj
 
 }
 

@@ -27,7 +27,7 @@ const Cabecalho = ({
         <SimpleLineIcons name="arrow-left" size={ 30 } color={ config.corPrimaria } />
         <Text style={ styles.txtTitulo }>{ titulo }</Text>
       </Pressable>
-    </View> : <View /> }
+    </View> : <Text style={ styles.txtTitulo }>{ titulo }</Text> }
     { /** opções que vçao ficar a direita do cabeçalho */ }
     { children ? <View>
       { children }

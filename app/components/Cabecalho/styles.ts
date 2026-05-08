@@ -14,7 +14,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
-    marginBottom: 40
+    marginBottom: 40,
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0
   },
   containerVoltar: {
     flexDirection: "row",

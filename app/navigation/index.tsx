@@ -1,7 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
+import CadastroLead from '../screens/CadastroLead';
 import CadastroPerfil from '../screens/CadastroPerfil';
+import Home from '../screens/Home';
 import Login from '../screens/Login';
 import SplashScreen from '../screens/SplashScreen';
 
@@ -29,6 +31,14 @@ const Navigation = () => {
     {
       nome: "cadastro_perfil",
       componente: CadastroPerfil
+    },
+    {
+      nome: "home",
+      componente: Home
+    },
+    {
+      nome: "cadastro_lead",
+      componente: CadastroLead
     }
   ];
 

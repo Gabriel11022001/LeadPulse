@@ -44,7 +44,7 @@ const CadastroPerfil = ({ navigation }: any) => {
       setCarregando(true);
       setErroGeral("");
     } catch (e) {
-
+      
     } finally {
 
     }
@@ -52,14 +52,14 @@ const CadastroPerfil = ({ navigation }: any) => {
   }
 
   return <LeadPulseTela>
+    { /** cabeçalho no topo da tela do app */ }
+    <Cabecalho
+      titulo="Cadastro"
+      habilitarBotaoVoltar={ true }
+      onVoltar={ () => {
+        navigation.goBack();
+      } } />  
     <ScrollView showsVerticalScrollIndicator={ false }>
-      { /** cabeçalho no topo da tela do app */ }
-      <Cabecalho
-        titulo="Cadastro"
-        habilitarBotaoVoltar={ true }
-        onVoltar={ () => {
-          navigation.goBack();
-        } } />  
       <Text style={ styles.titulo }>Criar conta</Text>
       <Text style={ styles.subtitulo }>Comece a gerenciar seus leads hoje</Text>
       { /** campo para o usuário informar o nome completo */ }
