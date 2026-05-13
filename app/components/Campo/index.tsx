@@ -15,7 +15,8 @@ export enum TipoCampo {
   data,
   genero,
   cpf,
-  cnpj
+  cnpj,
+  rg
 
 }
 

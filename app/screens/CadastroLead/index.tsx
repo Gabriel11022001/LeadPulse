@@ -1,12 +1,16 @@
 import Botao from "@/app/components/Botao";
+import BotaoCancelar from "@/app/components/BotaoCancelar";
 import Cabecalho from "@/app/components/Cabecalho";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
+import TipoPessoaLeadOpcoes from "@/app/components/TipoPessoaLeadOpcoes";
 import useDocumentoLead from "@/app/hooks/useDocumentoLead";
 import { useEmail } from "@/app/hooks/useEmail";
+import useLeadPulse from "@/app/hooks/useLeadPulse";
 import useTelefone from "@/app/hooks/useTelefone";
 import { TipoPessoaLead } from "@/app/types/lead";
-import { useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text } from "react-native";
 import styles from "./styles";
 
@@ -16,6 +20,11 @@ const CadastroLead = ({
   route
 }: any) => {
 
+  const {
+    lead,
+    atualizarDadosLead,
+    limparDadosLead
+  } = useLeadPulse();
   const [ carregando, setCarregando ] = useState<boolean>(false);
   const [ erroGeral, setErroGeral ] = useState<string>("");
   const [ idLead, setIdLead ] = useState<string>("");
@@ -25,7 +34,8 @@ const CadastroLead = ({
   const {
     documento,
     erroDocumento,
-    onDigitarDocumento
+    onDigitarDocumento,
+    setDocumento
   } = useDocumentoLead(tipoPessoa);
 
   // prosseguir para a próxima tela
@@ -33,6 +43,53 @@ const CadastroLead = ({
 
     try {
       setCarregando(true);
+
+      if (lead != null) {
+        atualizarDadosLead({
+          id: lead.id ?? "",
+          email: email.trim(),
+          telefone: telefone.trim(),
+          dataCadastro: lead.dataCadastro,
+          origem: lead.origem,
+          status: lead.status,
+          tipoPessoa: tipoPessoa,
+          cpf: tipoPessoa === TipoPessoaLead.pf ? documento.trim() : "",
+          cnpj: tipoPessoa === TipoPessoaLead.pj ? documento.trim() : "",
+          anotacoes: lead.anotacoes ?? [],
+          endereco: lead.endereco ?? undefined,
+          dataFundacao: lead.dataFundacao ?? "",
+          dataNascimento: lead.dataNascimento ?? "",
+          genero: lead.genero ?? "",
+          nomeCompleto: lead.nomeCompleto ?? "",
+          razaoSocial: lead.razaoSocial ?? "",
+          rg: lead.rg ?? ""
+        });
+      } else {
+        atualizarDadosLead({
+          id: "",
+          tipoPessoa: tipoPessoa,
+          email: email.trim(),
+          telefone: telefone.trim(),
+          origem: "app",
+          dataCadastro: "",
+          status: "aguardando_qualificacao",
+          cpf: tipoPessoa === TipoPessoaLead.pf ? documento.trim() : "",
+          cnpj: tipoPessoa === TipoPessoaLead.pj ? documento.trim() : "",
+          anotacoes: [],
+          endereco: undefined,
+          dataFundacao: "",
+          dataNascimento: "",
+          genero: "",
+          nomeCompleto: "",
+          razaoSocial: "",
+          rg: ""
+        });
+      }
+
+      if (tipoPessoa === TipoPessoaLead.pf) {
+        navigation.navigate("dados_completos_pf");
+      }
+
     } catch (e) {
 
     } finally {
@@ -41,24 +98,59 @@ const CadastroLead = ({
 
   }
 
+  // consultar o lead no servidor
+  const buscarLead = async (idLead: string) => {
+
+  }
+
+  // cancelar cadastro do lead
+  const cancelarCadastro = (): void => {
+    limparDadosLead();
+
+    navigation.replace("home");
+  }
+
+  useEffect(() => {
+    setDocumento("");
+  }, [ tipoPessoa ]);
+
+  useFocusEffect(useCallback(() => {  
+
+    if (lead != null) {
+      setTipoPessoa(lead.tipoPessoa);
+      onDigitarDocumento((lead.tipoPessoa == TipoPessoaLead.pf ? lead.cpf : lead.cnpj) ?? "");
+      onDigitarEmail(lead.email);
+      onDigitarTelefone(lead.telefone);
+    } else if (route.params && route.params.idLeadEditar) {
+      // consultar o lead no servidor para edição dos dados cadastrais
+      buscarLead(route.params.idLeadEditar ?? "");
+    }
+
+  }, [ lead ]));
+
   return <LeadPulseTela>
     { /** cabeçalho do app */ }
     <Cabecalho
       habilitarBotaoVoltar={ true }
       titulo="Cadastro de Lead"
       onVoltar={ () => {
-        navigation.goBack();
+        cancelarCadastro();
       } } />
     <ScrollView showsVerticalScrollIndicator={ false }>
       <Text style={ styles.titulo }>{ idLead === "" ? "Cadastrar Lead" : "Editar Lead" }</Text>
       <Text style={ styles.subtitulo }>Preencha os dados do lead</Text>
       { /** tipo de pessoa do lead */ }
+      <TipoPessoaLeadOpcoes
+        tipoPessoaSelecionada={ tipoPessoa }
+        onSelecionar={ (tipoPessoaSelecionada: TipoPessoaLead) => {
+          setTipoPessoa(tipoPessoaSelecionada);
+        } } />
       { /** campo para informar o documento do lead */ }
       <Campo
         valor={ documento }
         erro={ erroDocumento }
         habilitado={ !carregando }
-        placeholder={ tipoPessoa === TipoPessoaLead.pf ? "000.000.000-00" : "" }
+        placeholder={ tipoPessoa === TipoPessoaLead.pf ? "000.000.000-00" : "00.000.000/0000-00" }
         tipoCampo={ tipoPessoa === TipoPessoaLead.pf ? TipoCampo.cpf : TipoCampo.cnpj }
         titulo="Documento"
         onAlterarValor={ (documentoDigitado: string) => {
@@ -86,9 +178,9 @@ const CadastroLead = ({
         onAlterarValor={ (telefoneDigitado: string) => {
           onDigitarTelefone(telefoneDigitado);
         } } />
+      { /** botão para ´prosseguir com o cadastro do lead */ }
       <Botao
         titulo="Prosseguir"
-        margemBaixo={ 50 }
         margemTopo={ 30 }
         carregando={ carregando }
         habilitado={
@@ -100,6 +192,11 @@ const CadastroLead = ({
           && erroDocumento === ""
         }
         onExecutar={ prosseguirDadosCompletos } />
+      { /** botão para cancelar o cadastro do lead */ }
+      <BotaoCancelar 
+        titulo="Cancelar" 
+        onCancelar={ cancelarCadastro } 
+        margemBottom={ 50 } />
     </ScrollView>
   </LeadPulseTela>
 }

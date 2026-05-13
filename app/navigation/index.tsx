@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
+import CadastroCompletoPessoaFisica from '../screens/CadastroCompleto/PessoaFisica';
 import CadastroLead from '../screens/CadastroLead';
 import CadastroPerfil from '../screens/CadastroPerfil';
 import Home from '../screens/Home';
@@ -39,6 +40,10 @@ const Navigation = () => {
     {
       nome: "cadastro_lead",
       componente: CadastroLead
+    },
+    {
+      nome: "dados_completos_pf",
+      componente: CadastroCompletoPessoaFisica
     }
   ];
 

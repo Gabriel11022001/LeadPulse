@@ -43,6 +43,7 @@ export type Lead = {
   cpf?: string;
   dataNascimento?: string;
   genero?: string;
+  rg?: string;
 
   // pj
   razaoSocial?: string;

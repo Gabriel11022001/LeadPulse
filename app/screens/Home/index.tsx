@@ -161,6 +161,7 @@ const Home = ({ navigation }: any) => {
                   statusLead.map((status: StatusLeadFiltro, index) => {
 
                     return <Pressable
+                    key={ status.status }
                     style={ [
                       styles.statusLead,
                       index === 0 && { marginStart: 0 },

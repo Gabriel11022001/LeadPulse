@@ -1,8 +1,11 @@
+import LeadPulseProvider from "@/provider";
 import Navigation from "./navigation";
 
 const App = () => {
 
-  return <Navigation />
+  return <LeadPulseProvider>
+    <Navigation />
+  </LeadPulseProvider>
 }
 
 export default App;
