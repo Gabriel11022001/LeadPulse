@@ -2,7 +2,8 @@ import Botao from "@/app/components/Botao";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseUp from "@/app/components/LeadPulseUp";
 import Feather from "@expo/vector-icons/Feather";
-import { useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./styles";
@@ -50,7 +51,7 @@ const Login = ({ navigation }: any) => {
     try {
       setCarregando(true);
       setErroGeral("");
-
+      
       navigation.replace("home");
     } catch (e) {
       // apresentar alerta de erro para o usuário
@@ -72,6 +73,18 @@ const Login = ({ navigation }: any) => {
     }
 
   }
+
+  /**
+   * validar se o usuário optou por deixar salvo
+   * as credenciais para fazer login
+   */
+  const validarOptouSalvarCredenciaisLogin = async () => {
+
+  }
+
+  useFocusEffect(useCallback(() => {
+    validarOptouSalvarCredenciaisLogin();
+  }, []));
 
   return (
     <SafeAreaView style={ styles.container }>
