@@ -13,7 +13,7 @@ export type SelectOpcao = {
 interface SelectProps {
 
   titulo: string;
-  opcaoSelecionada: SelectOpcao; 
+  opcaoSelecionada: SelectOpcao | null; 
   opcoes: Array<SelectOpcao>;
   onSelecionarOpcao: (opcaoSelecionada: SelectOpcao) => void;
 
@@ -26,7 +26,7 @@ const Select = ({ opcoes, onSelecionarOpcao, titulo, opcaoSelecionada }: SelectP
     <Text style={ styles.titulo }>{ titulo }</Text>
     <View style={ styles.containerConteudo }>
       <Picker
-        selectedValue={ opcaoSelecionada.valor }
+        selectedValue={ opcaoSelecionada != null ? opcaoSelecionada.valor : "" }
         onValueChange={ (opcaoSelecionadaValor: string) => {
           onSelecionarOpcao(opcoes.find(op => op.valor === opcaoSelecionadaValor) ?? opcoes[ 0 ]);
         } }>

@@ -40,7 +40,8 @@ const useDocumentoLead = (tipoPessoaLead: TipoPessoaLead) => {
     documento,
     erroDocumento,
     onDigitarDocumento,
-    setDocumento
+    setDocumento,
+    setErroDocumento
   };
 }
 

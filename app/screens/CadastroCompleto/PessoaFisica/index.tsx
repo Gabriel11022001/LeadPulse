@@ -74,10 +74,10 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
     atualizarDadosLead(leadDadosAtualizados);
 
     // redirecionar o usuário para a tela de endereço
+    navigation.navigate("cadastro_endereco");
   }
 
   const voltar = (): void => {
-    console.log("Retornar para a tela inicial!");
 
     const leadDadosAtualizados: Lead = {
       id: lead?.id ?? "",
@@ -112,6 +112,10 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
       setRg(lead.rg ?? "");
       setDataNascimento(lead.dataNascimento ?? "");
       setGenero(lead.genero ?? generos[ 0 ].valor);
+    }
+
+    if (genero === "") {
+      setGenero(generos[ 0 ].valor);
     }
 
   }, [ lead ]));

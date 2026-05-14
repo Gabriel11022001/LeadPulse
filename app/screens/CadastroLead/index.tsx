@@ -35,7 +35,8 @@ const CadastroLead = ({
     documento,
     erroDocumento,
     onDigitarDocumento,
-    setDocumento
+    setDocumento,
+    setErroDocumento
   } = useDocumentoLead(tipoPessoa);
 
   // prosseguir para a próxima tela
@@ -112,6 +113,7 @@ const CadastroLead = ({
 
   useEffect(() => {
     setDocumento("");
+    setErroDocumento("");
   }, [ tipoPessoa ]);
 
   useFocusEffect(useCallback(() => {  

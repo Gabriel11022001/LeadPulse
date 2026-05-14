@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 12,
-    elevation: 4
+    elevation: 10
   },
   opcaoSelecionada: {
     backgroundColor: config.corPrimaria
