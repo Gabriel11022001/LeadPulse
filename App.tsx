@@ -1,5 +1,5 @@
 import LeadPulseProvider from "@/provider";
-import Navigation from "./navigation";
+import Navigation from "./app/navigation";
 
 const App = () => {
 

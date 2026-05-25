@@ -17,10 +17,12 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
   const [ carregando, setCarregando ] = useState<boolean>(false);
   const { lead, atualizarDadosLead, limparDadosLead } = useLeadPulse();
   const [ genero, setGenero ] = useState<string>("");
+  const [ nomeCompleto, setNomeCompleto ] = useState<string>("");
   const [ dataNascimento, setDataNascimento ] = useState<string>("");
   const [ rg, setRg ] = useState<string>("");
   const [ erroDataNascimento, setErroDataNascimento ] = useState<string>("");
   const [ erroRg, setErroRg ] = useState<string>("");
+  const [ erroNomeCompleto, setErroNomeCompleto ] = useState<string>("");
   const generos: Array<SelectOpcao> = [
     { key: "Masculino", label: "Masculino", valor: "Masculino" },
     { key: "Feminino", label: "Feminino", valor: "Feminino" }
@@ -46,6 +48,16 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
 
   }
 
+  const onDigitarNomeCompleto = (nomeCompletoDigitado: string): void => {
+    setNomeCompleto(nomeCompletoDigitado);
+    setErroNomeCompleto("");
+
+    if (nomeCompletoDigitado.trim().length === 0) {
+      setErroNomeCompleto("Informe o nome completo.");
+    }
+
+  }
+
   // cancelar o fluxo do cadastro do lead
   const cancelarCadastroLead = (): void => {
     limparDadosLead();
@@ -64,11 +76,12 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
       status: lead?.status ?? "",
       anotacoes: lead?.anotacoes ?? [],
       endereco: lead?.endereco ?? undefined,
-      nomeCompleto: lead?.nomeCompleto ?? "",
       cpf: lead?.cpf ?? "",
       dataNascimento: dataNascimento.trim(),
       genero: genero.trim(),
-      rg: rg.trim()
+      rg: rg.trim(),
+      nomeCompleto: nomeCompleto.trim(),
+      idUsuario: lead?.idUsuario ?? ""
     }
 
     atualizarDadosLead(leadDadosAtualizados);
@@ -130,6 +143,17 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
     <ScrollView showsVerticalScrollIndicator={ false }>
       <Text style={ styles.titulo }>Dados Completos</Text>
       <Text style={ styles.subtitulo }>Preencha os dados completos</Text>
+      { /** campo para informar o nome completo do lead */ }
+      <Campo
+        valor={ nomeCompleto }
+        placeholder="Digite o nome completo..."
+        erro={ erroNomeCompleto }
+        habilitado={ !carregando }
+        titulo="Nome Completo"
+        tipoCampo={ TipoCampo.default }
+        onAlterarValor={ (nomeCompletoDigitado: string) => {
+          onDigitarNomeCompleto(nomeCompletoDigitado);
+        } } />
       { /** campo para informar o rg do lead */ }
       <Campo
         valor={ rg }
@@ -169,6 +193,8 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
           && genero != ""
           && erroRg === ""
           && erroDataNascimento === ""
+          && nomeCompleto != ""
+          && erroNomeCompleto === ""
         }
         onExecutar={ () => {
           prosseguir();

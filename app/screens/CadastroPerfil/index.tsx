@@ -1,10 +1,15 @@
+import AlertaErroGeral from "@/app/components/AlertaErroGeral";
 import Botao from "@/app/components/Botao";
 import Cabecalho from "@/app/components/Cabecalho";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
+import useAuth from "@/app/hooks/useAuth";
 import { useEmail } from "@/app/hooks/useEmail";
 import useSenhaConfirmarSenha from "@/app/hooks/useSenhaConfirmarSenha";
 import useTelefone from "@/app/hooks/useTelefone";
+import { buscarUsuarioPeloEmailService } from "@/app/service/buscarUsuarioPeloEmailService";
+import cadastrarUsuarioService from "@/app/service/cadastrarUsuarioService";
+import { Usuario } from "@/app/types/usuario";
 import { useState } from "react";
 import { ScrollView, Text } from "react-native";
 import styles from "./styles";
@@ -18,6 +23,7 @@ const CadastroPerfil = ({ navigation }: any) => {
   const [ erroNomeCompleto, setErroNomeCompleto ] = useState<string>("");
   const { email, erroEmail, onDigitarEmail } = useEmail();
   const { telefone, erroTelefone, onDigitarTelefone } = useTelefone();
+
   const {
     senha,
     senhaConfirmar,
@@ -26,6 +32,11 @@ const CadastroPerfil = ({ navigation }: any) => {
     onDigitarSenha,
     onDigitarConfirmarSenha
   } = useSenhaConfirmarSenha();
+
+  const {
+    carregandoAuth,
+    autenticar
+  } = useAuth();
 
   const onDigitarNome = (nome: string): void => {
     setNomeCompleto(nome);
@@ -43,10 +54,46 @@ const CadastroPerfil = ({ navigation }: any) => {
     try {
       setCarregando(true);
       setErroGeral("");
-    } catch (e) {
-      
-    } finally {
 
+      // validar se já existe um perfil cadastrado com o e-mail informado
+      const usuarioCadastradoMesmoEmail: Usuario | null = await buscarUsuarioPeloEmailService(email.trim());
+
+      if (usuarioCadastradoMesmoEmail != null) {
+        // apresentar alerta informando duplicação de e-mail
+
+        setErroGeral("Informe outro e-mail.");
+        return;
+      }
+
+      const usuario: Usuario = {
+        id: "",
+        nomeCompleto: nomeCompleto.trim(),
+        ativo: true,
+        email: email.trim(),
+        telefone: telefone.trim(),
+        senha: senha.trim(),
+        dataCadastro: "",
+        dataUltimoLogin: ""
+      }
+
+      await cadastrarUsuarioService(usuario);
+
+      // realizar a autenticação do usuário que acabou de ser cadastrado
+      const usuarioLogado = await autenticar(
+        usuario.email,
+        usuario.senha ?? ""
+      );
+
+      if (usuarioLogado != null) {
+        // redirecionar o usuário para a tela home do app
+        navigation.replace("home");
+      }
+
+    } catch (e) {
+      // registrar no log de erro
+      setErroGeral("Erro ao tentar-se cadastrar o perfil, tente novamente.");
+    } finally {
+      setCarregando(false);
     }
 
   }
@@ -59,6 +106,10 @@ const CadastroPerfil = ({ navigation }: any) => {
       onVoltar={ () => {
         navigation.goBack();
       } } />  
+    <AlertaErroGeral
+      apresentar={ erroGeral != "" }
+      mensagem={ erroGeral }
+      onFechar={ () => { setErroGeral("") } } />
     <ScrollView showsVerticalScrollIndicator={ false }>
       <Text style={ styles.titulo }>Criar conta</Text>
       <Text style={ styles.subtitulo }>Comece a gerenciar seus leads hoje</Text>
@@ -66,7 +117,7 @@ const CadastroPerfil = ({ navigation }: any) => {
       <Campo
         valor={ nomeCompleto }
         erro={ erroNomeCompleto }
-        habilitado={ !carregando }
+        habilitado={ !carregando && !carregandoAuth }
         placeholder="Digite o nome completo..."
         titulo="Nome completo"
         tipoCampo={ TipoCampo.default }
@@ -77,7 +128,7 @@ const CadastroPerfil = ({ navigation }: any) => {
       <Campo
         valor={ email }
         erro={ erroEmail }
-        habilitado={ !carregando }
+        habilitado={ !carregando && !carregandoAuth }
         placeholder="seu@email.com"
         tipoCampo={ TipoCampo.email }
         titulo="E-mail"
@@ -88,7 +139,7 @@ const CadastroPerfil = ({ navigation }: any) => {
       <Campo
         valor={ telefone }
         erro={ erroTelefone }
-        habilitado={ !carregando }
+        habilitado={ !carregando && !carregandoAuth }
         placeholder="ex: (00) 00000-0000"
         tipoCampo={ TipoCampo.telefone }
         titulo="Telefone"
@@ -99,7 +150,7 @@ const CadastroPerfil = ({ navigation }: any) => {
       <Campo
         valor={ senha }
         erro={ erroSenha }
-        habilitado={ !carregando }
+        habilitado={ !carregando && !carregandoAuth }
         placeholder="Digite a senha..."
         tipoCampo={ TipoCampo.senha }
         titulo="Senha"
@@ -110,7 +161,7 @@ const CadastroPerfil = ({ navigation }: any) => {
       <Campo
         valor={ senhaConfirmar }
         erro={ erroSenhaConfirmar }
-        habilitado={ !carregando }
+        habilitado={ !carregando && !carregandoAuth }
         placeholder="Repita a senha..."
         tipoCampo={ TipoCampo.senha }
         titulo="Confirmar senha"
@@ -120,9 +171,10 @@ const CadastroPerfil = ({ navigation }: any) => {
       { /** botão para o usuário efetuar o cadastro */ }
       <Botao
         titulo="Criar conta"
-        carregando={ carregando }
+        carregando={ carregando || carregandoAuth }
         habilitado={
           !carregando
+          && !carregandoAuth
           && nomeCompleto != ""
           && email != ""
           && erroNomeCompleto === ""

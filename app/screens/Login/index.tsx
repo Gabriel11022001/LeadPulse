@@ -1,6 +1,9 @@
+import AlertaErroGeral from "@/app/components/AlertaErroGeral";
 import Botao from "@/app/components/Botao";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseUp from "@/app/components/LeadPulseUp";
+import useAuth from "@/app/hooks/useAuth";
+import { Usuario } from "@/app/types/usuario";
 import Feather from "@expo/vector-icons/Feather";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
@@ -11,7 +14,6 @@ import styles from "./styles";
 // tela de login do app
 const Login = ({ navigation }: any) => {
  
-  const [ carregando, setCarregando ] = useState<boolean>(false);
   const [ email, setEmail ] = useState<string>("");
   const [ senha, setSenha ] = useState<string>("");
   const [ erroEmail, setErroEmail ] = useState<string>("");
@@ -19,6 +21,11 @@ const Login = ({ navigation }: any) => {
   const [ senhaVisivel, setSenhaVisivel ] = useState<boolean>(false);
   const [ erroGeral, setErroGeral ] = useState<string>("");
   const [ lembrar, setLembrar ] = useState<boolean>(false);
+
+  const {
+    carregandoAuth,
+    autenticar
+  } = useAuth();
 
   const onDigitarEmail = (emailDigitado: string): void => {
     setErroEmail("");
@@ -40,24 +47,25 @@ const Login = ({ navigation }: any) => {
 
   }
 
-  // apresentar alerta de erro para o usuário
-  const apresentarAlertaErro = (msgErro: string): void => {
-    setErroGeral(msgErro.trim());
-  }
-
   // realizar login no app
   const efetuarLogin = async () => {
     
     try {
-      setCarregando(true);
       setErroGeral("");
       
+      const usuarioLogado: Usuario | null = await autenticar(email, senha);
+
+      if (usuarioLogado === null) {
+        setErroGeral("E-mail ou senha invalidos.");
+
+        return;
+      }
+
+      // redirecionar o usuário para a tela home do app
       navigation.replace("home");
     } catch (e) {
       // apresentar alerta de erro para o usuário
       setErroGeral(`Erro ao tentar-se efetuar o login: ${ e }`);
-    } finally {
-      setCarregando(false);
     }
 
   }
@@ -88,6 +96,13 @@ const Login = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={ styles.container }>
+      { /** alerta de erro geral */ }
+      <AlertaErroGeral
+        mensagem={ erroGeral }
+        apresentar={ erroGeral != "" }
+        onFechar={ () => {
+          setErroGeral("");
+        } } />
       <ScrollView showsVerticalScrollIndicator={ false }>
         <View style={ styles.conteudo }>
           <LeadPulseUp />
@@ -102,7 +117,7 @@ const Login = ({ navigation }: any) => {
                 onDigitarEmail(novoEmailDigitado);
               } }
               erro={ erroEmail }
-              habilitado={ !carregando }
+              habilitado={ !carregandoAuth }
               placeholder="seu@email.com"
               tipoCampo={ TipoCampo.email }
               titulo="E-mail" />
@@ -114,7 +129,7 @@ const Login = ({ navigation }: any) => {
                 onDigitarSenha(novaSenhaDigitada);
               } }
               erro={ erroSenha }
-              habilitado={ !carregando }
+              habilitado={ !carregandoAuth }
               placeholder="******"
               tipoCampo={ TipoCampo.senha }
               titulo="Senha"
@@ -146,8 +161,8 @@ const Login = ({ navigation }: any) => {
             <Botao 
               titulo="Entrar"
               botaoLogin={ true }
-              habilitado={ !carregando && email != "" && senha != "" && erroEmail === "" && erroSenha === "" }
-              carregando={ carregando } 
+              habilitado={ !carregandoAuth && email != "" && senha != "" && erroEmail === "" && erroSenha === "" }
+              carregando={ carregandoAuth } 
               onExecutar={ () => {
                 efetuarLogin();
               } } />

@@ -4,11 +4,14 @@ import Cabecalho from "@/app/components/Cabecalho";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import TipoPessoaLeadOpcoes from "@/app/components/TipoPessoaLeadOpcoes";
+import useAuth from "@/app/hooks/useAuth";
 import useDocumentoLead from "@/app/hooks/useDocumentoLead";
 import { useEmail } from "@/app/hooks/useEmail";
 import useLeadPulse from "@/app/hooks/useLeadPulse";
 import useTelefone from "@/app/hooks/useTelefone";
-import { TipoPessoaLead } from "@/app/types/lead";
+import buscarLeadPeloDocumentoService from "@/app/service/buscarLeadPeloDocumento";
+import { Lead, TipoPessoaLead } from "@/app/types/lead";
+import { Usuario } from "@/app/types/usuario";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Text } from "react-native";
@@ -20,6 +23,9 @@ const CadastroLead = ({
   route
 }: any) => {
 
+  const {
+    getUsuarioLogado
+  } = useAuth();
   const {
     lead,
     atualizarDadosLead,
@@ -45,6 +51,42 @@ const CadastroLead = ({
     try {
       setCarregando(true);
 
+      const documentoValidar: string = documento.trim();
+
+      const leadMesmoDocumento: Lead | null = await buscarLeadPeloDocumentoService(
+        documentoValidar,
+        tipoPessoa
+      );
+
+      if (leadMesmoDocumento != null) {
+
+        if (lead?.id && lead.id != "") {
+
+          if (lead.id != leadMesmoDocumento.id) {
+
+            if (tipoPessoa === TipoPessoaLead.pf) {
+              setErroGeral("Já existe outro lead cadastrado com esse mesmo cpf!");
+            } else {
+              setErroGeral("Já existe outro lead cadastrado com esse mesmo cnpj!");
+            }
+
+          }
+
+        } else {
+
+          if (tipoPessoa === TipoPessoaLead.pf) {
+            setErroGeral("Já existe outro lead cadastrado com esse mesmo cpf!");
+          } else {
+            setErroGeral("Já existe outro lead cadastrado com esse mesmo cnpj!");
+          }
+
+        }
+
+      }
+
+      // obter o id do usuário logado
+      const usuarioLogado: Usuario = await getUsuarioLogado();
+
       if (lead != null) {
         atualizarDadosLead({
           id: lead.id ?? "",
@@ -63,7 +105,8 @@ const CadastroLead = ({
           genero: lead.genero ?? "",
           nomeCompleto: lead.nomeCompleto ?? "",
           razaoSocial: lead.razaoSocial ?? "",
-          rg: lead.rg ?? ""
+          rg: lead.rg ?? "",
+          idUsuario: usuarioLogado.id ?? ""
         });
       } else {
         atualizarDadosLead({
@@ -83,7 +126,8 @@ const CadastroLead = ({
           genero: "",
           nomeCompleto: "",
           razaoSocial: "",
-          rg: ""
+          rg: "",
+          idUsuario: usuarioLogado.id ?? ""
         });
       }
 

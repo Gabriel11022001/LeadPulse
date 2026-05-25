@@ -26,9 +26,10 @@ export enum TipoPessoaLead {
 
 }
 
-export type Lead = {
+export interface Lead {
 
   id: string;
+  idUsuario?: string;
   email: string;
   telefone: string;
   endereco?: Endereco;
@@ -49,5 +50,7 @@ export type Lead = {
   razaoSocial?: string;
   cnpj?: string;
   dataFundacao?: string;
+
+  onApresentarDadosLead?: () => void;
 
 }

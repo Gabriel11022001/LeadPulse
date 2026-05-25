@@ -5,9 +5,10 @@ import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import Select, { SelectOpcao } from "@/app/components/Select";
 import useLeadPulse from "@/app/hooks/useLeadPulse";
+import cadastrarLeadService from "@/app/service/cadastrarLeadService";
 import consultarCidadesPeloEstadoService, { Cidade } from "@/app/service/consultarCidadesPeloEstadoService";
 import consultarEnderecoPeloCepService from "@/app/service/consultarEnderecoPeloCepService";
-import { Endereco, Lead } from "@/app/types/lead";
+import { Endereco, Lead, TipoPessoaLead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { ScrollView, Text } from "react-native";
@@ -23,6 +24,7 @@ interface EstadoBrasil {
 // tela de cadastro de endereço do lead
 const CadastroEndereco = ({ navigation }: any) => {
 
+  const [ erroGeral, setErroGeral ] = useState<string>("");
   const { lead, atualizarDadosLead, limparDadosLead } = useLeadPulse();
   const [ carregando, setCarregando ] = useState<boolean>(false);
   const [ carregandoConsultarEndereco, setCarregandoConsultarEndereco ] = useState<boolean>(false);
@@ -86,8 +88,71 @@ const CadastroEndereco = ({ navigation }: any) => {
   // cidades do estado selecionado
   const [ cidades, setCidades ] = useState<SelectOpcao[]>([]);
 
+  // cadastrar o lead
+  const cadastrar = async () => {
+    console.log("Cadastrar o lead:");
+    console.log(lead);
+
+    await cadastrarLeadService(lead);
+  }
+
+  // editar o lead
+  const editar = async () => {
+
+  }
+
   // finalizar cadastro/edição do lead
   const finalizar = async () => {
+    setCarregando(true);
+    setErroGeral("");
+
+    try {
+      const leadDadosAtualizados: Lead = {
+        id: lead?.id ?? "",
+        tipoPessoa: lead?.tipoPessoa ?? TipoPessoaLead.pf,
+        dataCadastro: lead?.dataCadastro ?? "",
+        email: lead?.email ?? "",
+        telefone: lead?.telefone ?? "",
+        origem: lead?.origem ?? "",
+        status: lead?.status ?? "",
+        anotacoes: lead?.anotacoes ?? [],
+        nomeCompleto: lead?.nomeCompleto ?? "",
+        cpf: lead?.cpf ?? "",
+        dataNascimento: lead?.dataNascimento ?? "",
+        genero: lead?.genero ?? "",
+        rg: lead?.rg ?? "",
+        cnpj: lead?.cnpj ?? "",
+        dataFundacao: lead?.dataFundacao ?? "",
+        razaoSocial: lead?.razaoSocial ?? "",
+        endereco: {
+          cep: cep.trim(),
+          complemento: complemento.trim(),
+          logradouro: logradouro.trim(),
+          cidade: cidade.trim(),
+          bairro: bairro.trim(),
+          estado: uf.trim(),
+          numero: numero.trim(),
+          leadId: lead?.id ?? ""
+        },
+        idUsuario: lead?.idUsuario ?? ""
+      }
+
+      atualizarDadosLead(leadDadosAtualizados);
+
+      if (lead?.id === "") {
+        // cadastrar
+        await cadastrar();
+      } else {
+        // editar
+        await editar();
+      }
+
+      // redirecionar o usuário para a tela de detalhes do lead
+    } catch (e) {
+      setErroGeral(`Erro ao tentar-se salvar o lead: ` + e);
+    } finally {
+      setCarregando(false);
+    }
 
   }
 

@@ -1,6 +1,8 @@
 import { apiKey } from "@/apiKeyFirebase";
 import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
+// configurar o firebase
 const firebaseConfig = {
   apiKey: apiKey,
   authDomain: "leadpulse-66857.firebaseapp.com",
@@ -11,5 +13,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+// banco de dados
+export const db = getFirestore(app);
 
 export default app;
