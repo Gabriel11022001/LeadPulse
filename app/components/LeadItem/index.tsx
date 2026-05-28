@@ -52,6 +52,31 @@ const LeadItem = ({ lead, onVisualizar, index, ultimoElemento }: LeadItemProps) 
     return "#000";
   }
 
+  const obterCorFundoIconeStatus = (status: string): string => {
+
+    if (status === "qualificado") {
+
+      return "#DBEAFE";
+    }
+
+    if (status === "aguardando_qualificacao") {
+
+      return "#D1FAE5";
+    }
+
+    if (status === "desqualificado") {
+
+      return "#FEE2E2";
+    }
+
+    if (status === "cliente") {
+
+      return "#EDE9FE";
+    }
+
+    return "#F1F5F9";
+  }
+
   const getStatusDescricao = (): string => {
 
     if (status === "qualificado") {
@@ -103,9 +128,11 @@ const LeadItem = ({ lead, onVisualizar, index, ultimoElemento }: LeadItemProps) 
   ] } onPress={ onVisualizar }>
     <View style={ styles.containerNomeLeadStatus }>
       { /** nome do lead */ }
-      <View style={ styles.nomeStatusContainer }>
-        <Ionicons name="person" size={ 24 } color={ obterCorIconeStatus(status) } />
-        <Text style={ styles.nomeLead }>{ tipoPessoa === TipoPessoaLead.pf ? nomeCompleto : razaoSocial }</Text>
+      <View style={ [
+        styles.statusIconeContainer,
+        { backgroundColor: obterCorFundoIconeStatus(status) }
+      ] }>
+        <Ionicons name="person" size={ 35 } color={ obterCorIconeStatus(status) } />
       </View>
       { /** status do lead */ }
       <Text style={ [
@@ -113,6 +140,7 @@ const LeadItem = ({ lead, onVisualizar, index, ultimoElemento }: LeadItemProps) 
         getContainerStatusLeadEstilo()
       ] }>{ getStatusDescricao() }</Text>
     </View>
+    <Text style={ styles.nomeLead }>{ tipoPessoa === TipoPessoaLead.pf ? nomeCompleto : razaoSocial }</Text>
     { /** telefone do lead */ }
     <Text style={ [ styles.dadoLead, { fontSize: 16, fontWeight: "bold" } ] }>{ telefone }</Text>
     { /** e-mail do lead */ }

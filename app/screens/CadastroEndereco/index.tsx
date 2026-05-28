@@ -89,15 +89,12 @@ const CadastroEndereco = ({ navigation }: any) => {
   const [ cidades, setCidades ] = useState<SelectOpcao[]>([]);
 
   // cadastrar o lead
-  const cadastrar = async () => {
-    console.log("Cadastrar o lead:");
-    console.log(lead);
-
+  const cadastrar = async (lead: Lead) => {
     await cadastrarLeadService(lead);
   }
 
   // editar o lead
-  const editar = async () => {
+  const editar = async (lead: Lead) => {
 
   }
 
@@ -141,10 +138,10 @@ const CadastroEndereco = ({ navigation }: any) => {
 
       if (lead?.id === "") {
         // cadastrar
-        await cadastrar();
+        await cadastrar(leadDadosAtualizados);
       } else {
         // editar
-        await editar();
+        await editar(leadDadosAtualizados);
       }
 
       // redirecionar o usuário para a tela de detalhes do lead
@@ -315,6 +312,8 @@ const CadastroEndereco = ({ navigation }: any) => {
   }
 
   useFocusEffect(useCallback(() => {
+    console.log("Lead tela de endereço:");
+    console.log(lead);
 
     if (lead) {
       setCep(lead.endereco?.cep ?? "");

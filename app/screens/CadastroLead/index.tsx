@@ -1,3 +1,4 @@
+import AlertaErroGeral from "@/app/components/AlertaErroGeral";
 import Botao from "@/app/components/Botao";
 import BotaoCancelar from "@/app/components/BotaoCancelar";
 import Cabecalho from "@/app/components/Cabecalho";
@@ -10,6 +11,8 @@ import { useEmail } from "@/app/hooks/useEmail";
 import useLeadPulse from "@/app/hooks/useLeadPulse";
 import useTelefone from "@/app/hooks/useTelefone";
 import buscarLeadPeloDocumentoService from "@/app/service/buscarLeadPeloDocumento";
+import buscarLeadPeloEmailService from "@/app/service/buscarLeadPeloEmail";
+import buscarLeadPeloIdService from "@/app/service/buscarLeadPeloIdService";
 import { Lead, TipoPessoaLead } from "@/app/types/lead";
 import { Usuario } from "@/app/types/usuario";
 import { useFocusEffect } from "@react-navigation/native";
@@ -50,6 +53,7 @@ const CadastroLead = ({
 
     try {
       setCarregando(true);
+      setErroGeral("");
 
       const documentoValidar: string = documento.trim();
 
@@ -60,14 +64,18 @@ const CadastroLead = ({
 
       if (leadMesmoDocumento != null) {
 
-        if (lead?.id && lead.id != "") {
+        if (lead?.id != "") {
 
-          if (lead.id != leadMesmoDocumento.id) {
-
+          if (lead?.id != leadMesmoDocumento.id) {
+            
             if (tipoPessoa === TipoPessoaLead.pf) {
-              setErroGeral("Já existe outro lead cadastrado com esse mesmo cpf!");
+              setErroGeral("Já existe outro lead cadastrado com o mesmo cpf!");
+
+              return;
             } else {
-              setErroGeral("Já existe outro lead cadastrado com esse mesmo cnpj!");
+              setErroGeral("Já existe outro lead cadastrado com o mesmo cnpj!");
+
+              return;
             }
 
           }
@@ -75,11 +83,35 @@ const CadastroLead = ({
         } else {
 
           if (tipoPessoa === TipoPessoaLead.pf) {
-            setErroGeral("Já existe outro lead cadastrado com esse mesmo cpf!");
+            setErroGeral("Já existe outro lead cadastrado com o mesmo cpf!");
+
+            return;
           } else {
-            setErroGeral("Já existe outro lead cadastrado com esse mesmo cnpj!");
+            setErroGeral("Já existe outro lead cadastrado com o mesmo cnpj!");
+
+            return;
           }
 
+        }
+
+      }
+      
+      const leadMesmoEmail: Lead | null = await buscarLeadPeloEmailService(email.trim(), tipoPessoa);
+
+      if (leadMesmoEmail != null) {
+
+        if (lead?.id != "") {
+
+          if (lead?.id != leadMesmoEmail.id) {
+            setErroGeral("Já existe outro lead cadastrado com o mesmo e-mail!");
+            
+            return;
+          }
+
+        } else {
+          setErroGeral("Já existe outro lead cadastrado com o mesmo e-mail!");
+
+          return;
         }
 
       }
@@ -99,14 +131,23 @@ const CadastroLead = ({
           cpf: tipoPessoa === TipoPessoaLead.pf ? documento.trim() : "",
           cnpj: tipoPessoa === TipoPessoaLead.pj ? documento.trim() : "",
           anotacoes: lead.anotacoes ?? [],
-          endereco: lead.endereco ?? undefined,
           dataFundacao: lead.dataFundacao ?? "",
           dataNascimento: lead.dataNascimento ?? "",
           genero: lead.genero ?? "",
           nomeCompleto: lead.nomeCompleto ?? "",
           razaoSocial: lead.razaoSocial ?? "",
           rg: lead.rg ?? "",
-          idUsuario: usuarioLogado.id ?? ""
+          idUsuario: usuarioLogado.id ?? "",
+          endereco: {
+            cep: lead.endereco?.cep ?? "",
+            complemento: lead.endereco?.complemento ?? "",
+            logradouro: lead.endereco?.logradouro ?? "",
+            cidade: lead.endereco?.cidade ?? "",
+            bairro: lead.endereco?.bairro ?? "",
+            estado: lead.endereco?.estado ?? "",
+            leadId: lead.id ?? "",
+            numero: lead.endereco?.numero ?? ""
+          }
         });
       } else {
         atualizarDadosLead({
@@ -114,13 +155,22 @@ const CadastroLead = ({
           tipoPessoa: tipoPessoa,
           email: email.trim(),
           telefone: telefone.trim(),
-          origem: "app",
+          origem: "Aplicativo",
           dataCadastro: "",
           status: "aguardando_qualificacao",
           cpf: tipoPessoa === TipoPessoaLead.pf ? documento.trim() : "",
           cnpj: tipoPessoa === TipoPessoaLead.pj ? documento.trim() : "",
           anotacoes: [],
-          endereco: undefined,
+          endereco: {
+            cep: "",
+            complemento: "",
+            logradouro: "",
+            leadId: "",
+            bairro: "",
+            cidade: "",
+            estado: "",
+            numero: ""
+          },
           dataFundacao: "",
           dataNascimento: "",
           genero: "",
@@ -145,6 +195,21 @@ const CadastroLead = ({
 
   // consultar o lead no servidor
   const buscarLead = async (idLead: string) => {
+
+    try {
+      setCarregando(true);
+
+      const leadEncontrado: Lead | null = await buscarLeadPeloIdService(idLead);
+
+      if (leadEncontrado != null) {
+        atualizarDadosLead(leadEncontrado);
+      }
+
+    } catch (e) {
+      console.log("Erro ao tentar-se consultar o lead pelo id: " + e);
+    } finally {
+      setCarregando(false);
+    }
 
   }
 
@@ -181,6 +246,12 @@ const CadastroLead = ({
       titulo="Cadastro de Lead"
       onVoltar={ () => {
         cancelarCadastro();
+      } } />
+    <AlertaErroGeral 
+      apresentar={ erroGeral != "" }
+      mensagem={ erroGeral }
+      onFechar={ () => {
+        setErroGeral("");
       } } />
     <ScrollView showsVerticalScrollIndicator={ false }>
       <Text style={ styles.titulo }>{ idLead === "" ? "Cadastrar Lead" : "Editar Lead" }</Text>

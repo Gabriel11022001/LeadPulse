@@ -50,3 +50,20 @@ export const mascaraCelular = (telefone: string): string => {
     .replace(/^(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{5})(\d)/, "$1-$2");
 }
+
+// aplicar mascara de rg
+export const mascaraRg = (rg: string): string => {
+  const valor = rg.replace(/\D/g, "");
+
+  return valor
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1-$2")
+    .slice(0, 12);
+}
+
+// aplicar mascara de dia/mes/ano no campo
+export const mascaraDataDiaMesAno = (data: string): string => data.replace(/\D/g, "")
+  .replace(/^(\d{2})(\d)/, "$1/$2")
+  .replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3")
+  .slice(0, 10);

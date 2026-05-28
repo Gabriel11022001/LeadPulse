@@ -102,7 +102,7 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
       status: lead?.status ?? "",
       anotacoes: lead?.anotacoes ?? [],
       endereco: lead?.endereco ?? undefined,
-      nomeCompleto: lead?.nomeCompleto ?? "",
+      nomeCompleto: nomeCompleto.trim(),
       cpf: lead?.cpf ?? "",
       dataNascimento: dataNascimento.trim(),
       genero: genero.trim(),
@@ -120,11 +120,15 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
   }
 
   useFocusEffect(useCallback(() => {
+    console.log("Lead no cadastro completo pf:");
+    console.log(lead);
 
     if (lead != null) {
       setRg(lead.rg ?? "");
       setDataNascimento(lead.dataNascimento ?? "");
       setGenero(lead.genero ?? generos[ 0 ].valor);
+      setNomeCompleto(lead.nomeCompleto ?? "");
+      setRg(lead.rg ?? "");
     }
 
     if (genero === "") {

@@ -3,8 +3,8 @@ import LeadItem from "@/app/components/LeadItem";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import Loader from "@/app/components/Loader";
 import config from "@/app/config";
+import filtrarLeadsService from "@/app/service/filtrarLeadsService";
 import { Lead } from "@/app/types/lead";
-import gerarListaLeadsMock from "@/app/utils/gerarListaLeadsMock";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useFocusEffect } from "@react-navigation/native";
@@ -35,11 +35,17 @@ const Home = ({ navigation }: any) => {
     try {
       setCarregando(true);
 
-      const leadsBase: Array<Lead> = gerarListaLeadsMock(100);
+      // const leadsBase: Array<Lead> = gerarListaLeadsMock(100);
+      const leadsBase: Lead[] = await filtrarLeadsService();
 
       setLeads(leadsBase);
 
       calcularLeadsPorStatus(leadsBase);
+
+      filtrarLeadsPorStatus({
+        status: "Todos",
+        quantidade: leadsBase.length
+      });
     } catch (e) {
 
     } finally {
@@ -75,12 +81,7 @@ const Home = ({ navigation }: any) => {
     setCarregandoFiltroLeadsTexto(true);
 
     try {
-
-      if (filtroTextoLeads.trim().length === 0) {
-        // listar todos os leads
-      } else {
-        // listar baseado no texto passado
-      }
+      const filtroTexto: string = filtroTextoLeads.trim();
 
     } catch (e) {
 
@@ -91,7 +92,7 @@ const Home = ({ navigation }: any) => {
   }
 
   const visualizarLead = (idLead: string): void => {
-
+    navigation.replace("cadastro_lead", { idLeadEditar: idLead });
   }
 
   useEffect(() => {

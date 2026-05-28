@@ -26,6 +26,7 @@ const cadastrarLeadService = async (lead: Lead | null) => {
       origem: lead.origem,
       status: lead.status,
       cpf: isPf ? lead.cpf : lead.cnpj,
+      rg: isPf ? lead.rg : "",
       nome_completo: isPf ? lead.nomeCompleto : "",
       data_nascimento: isPf ? lead.dataNascimento : "",
       genero: isPf ? lead.genero : "",

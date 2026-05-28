@@ -14,8 +14,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderStyle: "solid",
     borderColor: config.corBordas,
-    borderWidth: 1,
-    elevation: 3
+    borderWidth: 1
   },
   containerNomeLeadStatus: {
     width: "100%",
@@ -25,14 +24,17 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   nomeLead: {
-    color: "#000",
+    color: config.corPrimaria,
     fontWeight: 900,
-    fontSize: 16,
-    marginStart: 7
+    fontSize: 15,
+    textTransform: "uppercase"
   },
-  nomeStatusContainer: {
-    flexDirection: "row",
-    alignItems: "center"
+  statusIconeContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 60,
+    height: 60,
+    borderRadius: 30
   },
   containerStatusLead: {
     padding: 10,
@@ -59,7 +61,8 @@ const styles = StyleSheet.create({
   },
   dadoLead: {
     color: "#000",
-    marginTop: 5
+    marginTop: 5,
+    fontSize: 14
   },
   containerOrigemLead: {
     marginTop: 10,

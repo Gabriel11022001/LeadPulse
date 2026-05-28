@@ -1,5 +1,5 @@
 import config from '@/app/config';
-import { mascaraCelular, mascaraCep, mascaraCnpj, mascaraCpf } from '@/app/utils/mascarasUtils';
+import { mascaraCelular, mascaraCep, mascaraCnpj, mascaraCpf, mascaraDataDiaMesAno, mascaraRg } from '@/app/utils/mascarasUtils';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -99,6 +99,16 @@ const Campo = ({
     if (tipoCampo === TipoCampo.telefone) {
       // aplicar mascara de telefone celular
       textoComMascara = mascaraCelular(texto);
+    }
+
+    if (tipoCampo === TipoCampo.rg) {
+      // aplicar mascara de rg no campo
+      textoComMascara = mascaraRg(texto);
+    }
+
+    if (tipoCampo === TipoCampo.data) {
+      // aplicar mascara de dia/mes/ano
+      textoComMascara = mascaraDataDiaMesAno(texto);
     }
 
     return textoComMascara;
