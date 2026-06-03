@@ -5,6 +5,7 @@ import CadastroCompletoPessoaFisica from '../screens/CadastroCompleto/PessoaFisi
 import CadastroEndereco from '../screens/CadastroEndereco';
 import CadastroLead from '../screens/CadastroLead';
 import CadastroPerfil from '../screens/CadastroPerfil';
+import DetalhesLead from '../screens/DetalhesLead';
 import Home from '../screens/Home';
 import Login from '../screens/Login';
 import SplashScreen from '../screens/SplashScreen';
@@ -49,6 +50,10 @@ const Navigation = () => {
     {
       nome: "cadastro_endereco",
       componente: CadastroEndereco
+    },
+    {
+      nome: "detalhes_lead",
+      componente: DetalhesLead
     }
   ];
 

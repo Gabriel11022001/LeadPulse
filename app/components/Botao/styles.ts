@@ -25,6 +25,19 @@ const styles = StyleSheet.create({
   },
   botaoDesabilitado: {
     opacity: 0.5
+  },
+  fundoContainerIconeBotao: {
+    width: 40,
+    height: 40,
+    backgroundColor: "rgba(191, 219, 254, 0.15)",
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginEnd: 10
+  },
+  containerTextoIcone: {
+    flexDirection: "row",
+    alignItems: "center"
   }
 
 });

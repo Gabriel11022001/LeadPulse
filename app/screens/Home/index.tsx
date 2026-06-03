@@ -1,12 +1,13 @@
-import Cabecalho from "@/app/components/Cabecalho";
 import LeadItem from "@/app/components/LeadItem";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import Loader from "@/app/components/Loader";
+import MenuHome from "@/app/components/MenuHome";
 import config from "@/app/config";
+import useAuth from "@/app/hooks/useAuth";
 import filtrarLeadsService from "@/app/service/filtrarLeadsService";
 import { Lead } from "@/app/types/lead";
+import { Usuario } from "@/app/types/usuario";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
@@ -28,6 +29,8 @@ const Home = ({ navigation }: any) => {
   const [ statusLead, setStatusLead ] = useState<StatusLeadFiltro[]>([]);
   const [ statusSelecionado, setStatusSelecionado ] = useState<StatusLeadFiltro | null>(null);
   const [ carregandoFiltroLeadsTexto, setCarregandoFiltroLeadsTexto ] = useState<boolean>(false);
+  const [ nomeUsuarioLogado, setNomeUsuarioLogado ] = useState<string>("");
+  const { getUsuarioLogado } = useAuth();
 
   // listar os leads cadastrados
   const listarLeads = async () => {
@@ -91,15 +94,29 @@ const Home = ({ navigation }: any) => {
 
   }
 
+  // redirecionar o usuário para a tela com os detalhes do lead
   const visualizarLead = (idLead: string): void => {
-    navigation.replace("cadastro_lead", { idLeadEditar: idLead });
+    navigation.navigate("detalhes_lead", { idLeadVisualizar: idLead });
   }
 
   useEffect(() => {
     filtrarLeadsPorTexto();
   }, [ filtroTextoLeads ]);
 
+  // obter o nome do usuário logado
+  const obterNomeUsuarioLogado = async () => {
+    const usuarioLogadoApp: Usuario | null = await getUsuarioLogado();
+
+    console.log(usuarioLogadoApp);
+
+    if (usuarioLogadoApp != null) {
+      setNomeUsuarioLogado(usuarioLogadoApp.nomeCompleto ?? "");
+    }
+
+  }
+
   useFocusEffect(useCallback(() => {
+    obterNomeUsuarioLogado();
     listarLeads();
   }, []));
 
@@ -107,27 +124,19 @@ const Home = ({ navigation }: any) => {
     { /** loader de carregamento */ }
     <Loader carregando={ carregando } msgLoader="Consultando os leads, aguarde..." />
     { /** cabeçalho com botão para adicionar lead novo */ }
-    <Cabecalho
-      habilitarBotaoVoltar={ false }
-      titulo="Home">
-        <View>
-          { /** botão para redirecionar o usuário para a tela de cadastro de lead */ }
-          <Pressable style={ {
-            backgroundColor: "#DBEAFE",
-            width: 50,
-            height: 50,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 25,
-            elevation: 5
-          } }
-          onPress={ () => navigation.navigate("cadastro_lead") }>
-            <FontAwesome6 name="add" size={ 40 } color={
-              config.corPrimaria
-            } />
-          </Pressable>
-        </View>
-    </Cabecalho>
+    <MenuHome
+      leadsEncontrados={ leads.length ?? 0 }
+      nomeUsuarioLogado={ nomeUsuarioLogado }
+      possuiNotificacoes={ true }
+      onVoltar={ () => {
+        
+      } }
+      onRedirecionarAdicionarLead={ () => {
+        navigation.navigate("cadastro_lead");
+      } }
+      onRedirecionarNotificacoes={ () => {
+
+      } } />
     <FlatList
       data={ leads }
       renderItem={ ({ item, index }) => {
@@ -144,7 +153,6 @@ const Home = ({ navigation }: any) => {
         return <View style={ styles.containerTopo }>
           <View>
             <Text style={ styles.titulo }>Meus leads</Text>
-            <Text style={ styles.txtMeusLeads }>{ leads.length } leads encontrados</Text>
             { /** campo para o usuário filtrar os leads */ }
             <View style={ styles.containerCampoFiltro }>
               <EvilIcons name="search" size={ 30 } color={ config.corBordas } />
@@ -188,9 +196,14 @@ const Home = ({ navigation }: any) => {
       ListFooterComponent={ () => {
         // footer da tela
 
-        return <View>
+        if (leads.length === 0) {
 
-        </View>
+          return <View>
+            <Text>Nenhum lead encontrado.</Text>
+          </View>
+        }
+
+        return null;
       } } />
   </LeadPulseTela>
 }

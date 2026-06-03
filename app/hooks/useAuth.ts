@@ -53,7 +53,7 @@ const useAuth = () => {
   // obter os dados do usuário logado
   const getUsuarioLogado = async () => {
     const idUsuario: string = await SecureStore.getItemAsync("id_usuario_logado") ?? "";
-    const nomeUsuario: string = await SecureStore.getItemAsync("nome_usuario_logado") ?? "";
+    const nomeUsuario: string = await SecureStore.getItemAsync("nome_completo_usuario_logado") ?? "";
     const emailUsuario: string = await SecureStore.getItemAsync("email_usuario_logado") ?? "";
 
     const usuario: Usuario = {

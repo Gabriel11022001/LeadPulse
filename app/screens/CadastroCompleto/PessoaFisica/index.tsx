@@ -1,15 +1,14 @@
 import Botao from "@/app/components/Botao";
 import BotaoCancelar from "@/app/components/BotaoCancelar";
-import Cabecalho from "@/app/components/Cabecalho";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
+import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
 import Select, { SelectOpcao } from "@/app/components/Select";
 import useLeadPulse from "@/app/hooks/useLeadPulse";
 import { Lead, TipoPessoaLead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { ScrollView, Text } from "react-native";
-import styles from "./styles";
+import { ScrollView } from "react-native";
 
 // tela de cadastro dos dados completo do pf
 const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
@@ -138,15 +137,14 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
   }, [ lead ]));
 
   return <LeadPulseTela>
-    <Cabecalho
-      titulo="Cadastro de Lead"
-      habilitarBotaoVoltar={ true }
+    <MenuTopo
+      tela={ TipoTela.cadastroLead }
+      titulo="Dados Completos"
+      subtitulo="Preencha os dados completos"
       onVoltar={ () => {
         voltar();
       } } />
     <ScrollView showsVerticalScrollIndicator={ false }>
-      <Text style={ styles.titulo }>Dados Completos</Text>
-      <Text style={ styles.subtitulo }>Preencha os dados completos</Text>
       { /** campo para informar o nome completo do lead */ }
       <Campo
         valor={ nomeCompleto }

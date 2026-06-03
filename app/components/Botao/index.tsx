@@ -1,4 +1,5 @@
-import { ActivityIndicator, Pressable, Text } from "react-native";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import styles from "./styles";
 
 interface BotaoProps {
@@ -34,7 +35,12 @@ const Botao = ({
     ] }
     disabled={ !habilitado }
     onPress={ onExecutar }>
-    { !carregando ? <Text style={ styles.textoBotao }>{ titulo }</Text> : <ActivityIndicator size={ 40 } color="#fff" /> }
+    { !carregando ? <View style={ styles.containerTextoIcone }>
+      <View style={ styles.fundoContainerIconeBotao }>
+        <AntDesign name="arrow-right" size={ 25 } color="#fff" />
+      </View>
+      <Text style={ styles.textoBotao }>{ titulo }</Text>
+    </View> : <ActivityIndicator size={ 40 } color="#fff" /> }
   </Pressable>
 }
 

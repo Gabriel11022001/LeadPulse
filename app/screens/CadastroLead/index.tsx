@@ -1,9 +1,9 @@
 import AlertaErroGeral from "@/app/components/AlertaErroGeral";
 import Botao from "@/app/components/Botao";
 import BotaoCancelar from "@/app/components/BotaoCancelar";
-import Cabecalho from "@/app/components/Cabecalho";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
+import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
 import TipoPessoaLeadOpcoes from "@/app/components/TipoPessoaLeadOpcoes";
 import useAuth from "@/app/hooks/useAuth";
 import useDocumentoLead from "@/app/hooks/useDocumentoLead";
@@ -17,8 +17,7 @@ import { Lead, TipoPessoaLead } from "@/app/types/lead";
 import { Usuario } from "@/app/types/usuario";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView, Text } from "react-native";
-import styles from "./styles";
+import { ScrollView } from "react-native";
 
 // tela de cadastro de lead
 const CadastroLead = ({
@@ -240,10 +239,11 @@ const CadastroLead = ({
   }, [ lead ]));
 
   return <LeadPulseTela>
-    { /** cabeçalho do app */ }
-    <Cabecalho
-      habilitarBotaoVoltar={ true }
+    { /** menu do topo */ }
+    <MenuTopo
       titulo="Cadastro de Lead"
+      subtitulo="Preencha os dados do lead"
+      tela={ TipoTela.cadastroLead }
       onVoltar={ () => {
         cancelarCadastro();
       } } />
@@ -254,8 +254,6 @@ const CadastroLead = ({
         setErroGeral("");
       } } />
     <ScrollView showsVerticalScrollIndicator={ false }>
-      <Text style={ styles.titulo }>{ idLead === "" ? "Cadastrar Lead" : "Editar Lead" }</Text>
-      <Text style={ styles.subtitulo }>Preencha os dados do lead</Text>
       { /** tipo de pessoa do lead */ }
       <TipoPessoaLeadOpcoes
         tipoPessoaSelecionada={ tipoPessoa }

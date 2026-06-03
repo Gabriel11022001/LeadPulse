@@ -1,8 +1,8 @@
 import Botao from "@/app/components/Botao";
 import BotaoCancelar from "@/app/components/BotaoCancelar";
-import Cabecalho from "@/app/components/Cabecalho";
 import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
+import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
 import Select, { SelectOpcao } from "@/app/components/Select";
 import useLeadPulse from "@/app/hooks/useLeadPulse";
 import cadastrarLeadService from "@/app/service/cadastrarLeadService";
@@ -11,8 +11,7 @@ import consultarEnderecoPeloCepService from "@/app/service/consultarEnderecoPelo
 import { Endereco, Lead, TipoPessoaLead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { ScrollView, Text } from "react-native";
-import styles from "./styles";
+import { ScrollView } from "react-native";
 
 interface EstadoBrasil {
 
@@ -95,7 +94,7 @@ const CadastroEndereco = ({ navigation }: any) => {
 
   // editar o lead
   const editar = async (lead: Lead) => {
-
+    
   }
 
   // finalizar cadastro/edição do lead
@@ -331,15 +330,14 @@ const CadastroEndereco = ({ navigation }: any) => {
 
   return <LeadPulseTela>
     { /** cabeçalho da tela de cadastro de endereço */ }
-    <Cabecalho
+    <MenuTopo
+      tela={ TipoTela.cadastroLead }
       titulo="Endereço"
-      habilitarBotaoVoltar={ true }
+      subtitulo="Preencha abaixo os campos do endereço"
       onVoltar={ () => {
         voltar();
       } } />
     <ScrollView showsVerticalScrollIndicator={ false }>
-      <Text style={ styles.titulo }>Endereço</Text>
-      <Text style={ styles.subtitulo }>Preencha abaixo os campos do endereço</Text>
       { /** campo para informar o cep do lead */ }
       <Campo
         valor={ cep }
