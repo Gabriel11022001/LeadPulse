@@ -3,13 +3,15 @@ export type Config = {
   corPrimaria: string;
   corSecundaria: string;
   corFundoTela: string;
+  corBordas: string;
 
 }
 
 const config: Config = {
-  corPrimaria: "rgba(30, 144, 255, 1.0)",
+  corPrimaria: "#3B82F6",
   corSecundaria: "",
-  corFundoTela: ""
+  corFundoTela: "",
+  corBordas: "#D1D5DB"
 }
 
 export default config;

@@ -1,4 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
+import styles from "./styles";
 
 interface Props {
 
@@ -8,7 +9,7 @@ interface Props {
 
 const LeadPulseTela = ({ children }: Props) => {
 
-  return <SafeAreaView>
+  return <SafeAreaView style={ styles.tela }>
     { children }
   </SafeAreaView>
 }

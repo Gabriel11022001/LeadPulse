@@ -1,6 +1,12 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
+import CadastroCompletoPessoaFisica from '../screens/CadastroCompleto/PessoaFisica';
+import CadastroEndereco from '../screens/CadastroEndereco';
+import CadastroLead from '../screens/CadastroLead';
+import CadastroPerfil from '../screens/CadastroPerfil';
+import DetalhesLead from '../screens/DetalhesLead';
+import Home from '../screens/Home';
 import Login from '../screens/Login';
 import SplashScreen from '../screens/SplashScreen';
 
@@ -24,6 +30,30 @@ const Navigation = () => {
     {
       nome: "login",
       componente: Login
+    },
+    {
+      nome: "cadastro_perfil",
+      componente: CadastroPerfil
+    },
+    {
+      nome: "home",
+      componente: Home
+    },
+    {
+      nome: "cadastro_lead",
+      componente: CadastroLead
+    },
+    {
+      nome: "dados_completos_pf",
+      componente: CadastroCompletoPessoaFisica
+    },
+    {
+      nome: "cadastro_endereco",
+      componente: CadastroEndereco
+    },
+    {
+      nome: "detalhes_lead",
+      componente: DetalhesLead
     }
   ];
 
@@ -31,17 +61,9 @@ const Navigation = () => {
     <Stack.Navigator initialRouteName='splash'>
       { telas.map(({ nome, componente }) => {
 
-        if (nome === "splash" || nome === "login") {
-
-          return <Stack.Screen
-            name={ nome }
-            component={ componente }
-            options={ {
-              headerShown: false
-            } } />
-        }
-
-        return <Stack.Screen name={ nome } component={ componente } />
+        return <Stack.Screen name={ nome } component={ componente } options={ {
+          headerShown: false
+        } } />
       }) }
     </Stack.Navigator>
   </NavigationContainer>
