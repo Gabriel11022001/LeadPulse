@@ -17,6 +17,9 @@ const styles = StyleSheet.create({
     marginEnd: "5%",
     height: 65
   },
+  botaoDeletar: {
+    backgroundColor: "#FF1A1A"
+  },
   textoBotao: {
     color: "#fff",
     fontSize: 18,
@@ -35,9 +38,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginEnd: 10
   },
+  fundoContainerIconeBotaoDeletar: {
+    backgroundColor: "rgba(254, 202, 202, 0.30)"
+  },
   containerTextoIcone: {
     flexDirection: "row",
     alignItems: "center"
+  },
+  botaoConfirmar: {
+    backgroundColor: "#fff"
+  },
+  txtBotaoConfirmar: {
+    color: "#000"
+  },
+  fundoContainerBotaoConfirmar: {
+    backgroundColor: config.corPrimaria
   }
 
 });

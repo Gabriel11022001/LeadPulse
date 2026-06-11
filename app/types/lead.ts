@@ -13,9 +13,10 @@ export type Endereco = {
 
 export type Anotacao = {
 
-  leadId: string;
+  id?: string;
+  leadId?: string;
   anotacao: string;
-  dataCadastro: string;
+  dataCadastro?: string;
 
 }
 

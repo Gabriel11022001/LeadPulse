@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   txtBotaoCancelar: {
-    color: "#000",
+    color: config.corPrimaria,
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 18
