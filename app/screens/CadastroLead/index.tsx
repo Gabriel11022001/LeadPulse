@@ -17,7 +17,7 @@ import { Lead, TipoPessoaLead } from "@/app/types/lead";
 import { Usuario } from "@/app/types/usuario";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 
 // tela de cadastro de lead
 const CadastroLead = ({
@@ -253,66 +253,71 @@ const CadastroLead = ({
       onFechar={ () => {
         setErroGeral("");
       } } />
-    <ScrollView showsVerticalScrollIndicator={ false }>
-      { /** tipo de pessoa do lead */ }
-      <TipoPessoaLeadOpcoes
-        tipoPessoaSelecionada={ tipoPessoa }
-        onSelecionar={ (tipoPessoaSelecionada: TipoPessoaLead) => {
-          setTipoPessoa(tipoPessoaSelecionada);
-        } } />
-      { /** campo para informar o documento do lead */ }
-      <Campo
-        valor={ documento }
-        erro={ erroDocumento }
-        habilitado={ !carregando }
-        placeholder={ tipoPessoa === TipoPessoaLead.pf ? "000.000.000-00" : "00.000.000/0000-00" }
-        tipoCampo={ tipoPessoa === TipoPessoaLead.pf ? TipoCampo.cpf : TipoCampo.cnpj }
-        titulo="Documento"
-        onAlterarValor={ (documentoDigitado: string) => {
-          onDigitarDocumento(documentoDigitado);
-        } } />
-      { /** e-mail do lead */ }
-      <Campo
-        valor={ email }
-        erro={ erroEmail }
-        habilitado={ !carregando }
-        placeholder="email@email.com"
-        tipoCampo={ TipoCampo.email }
-        titulo="E-mail"
-        onAlterarValor={ (emailDigitado: string) => {
-          onDigitarEmail(emailDigitado);
-        } } />
-      { /** telefone do lead */ }
-      <Campo
-        valor={ telefone }
-        erro={ erroTelefone }
-        habilitado={ !carregando }
-        placeholder="(00) 00000-0000"
-        tipoCampo={ TipoCampo.telefone }
-        titulo="Telefone"
-        onAlterarValor={ (telefoneDigitado: string) => {
-          onDigitarTelefone(telefoneDigitado);
-        } } />
-      { /** botão para ´prosseguir com o cadastro do lead */ }
-      <Botao
-        titulo="Prosseguir"
-        margemTopo={ 30 }
-        carregando={ carregando }
-        habilitado={
-          email != ""
-          && telefone != ""
-          && documento != ""
-          && erroEmail === ""
-          && erroTelefone === ""
-          && erroDocumento === ""
-        }
-        onExecutar={ prosseguirDadosCompletos } />
-      { /** botão para cancelar o cadastro do lead */ }
-      <BotaoCancelar 
-        titulo="Cancelar" 
-        onCancelar={ cancelarCadastro } 
-        margemBottom={ 50 } />
-    </ScrollView>
+    <KeyboardAvoidingView
+      style={ { flex: 1 } }
+      keyboardVerticalOffset={ 20 }
+      behavior={ Platform.OS === "ios" ? "padding" : "height" }>
+      <ScrollView showsVerticalScrollIndicator={ false }>
+        { /** tipo de pessoa do lead */ }
+        <TipoPessoaLeadOpcoes
+          tipoPessoaSelecionada={ tipoPessoa }
+          onSelecionar={ (tipoPessoaSelecionada: TipoPessoaLead) => {
+            setTipoPessoa(tipoPessoaSelecionada);
+          } } />
+        { /** campo para informar o documento do lead */ }
+        <Campo
+          valor={ documento }
+          erro={ erroDocumento }
+          habilitado={ !carregando }
+          placeholder={ tipoPessoa === TipoPessoaLead.pf ? "000.000.000-00" : "00.000.000/0000-00" }
+          tipoCampo={ tipoPessoa === TipoPessoaLead.pf ? TipoCampo.cpf : TipoCampo.cnpj }
+          titulo="Documento"
+          onAlterarValor={ (documentoDigitado: string) => {
+            onDigitarDocumento(documentoDigitado);
+          } } />
+        { /** e-mail do lead */ }
+        <Campo
+          valor={ email }
+          erro={ erroEmail }
+          habilitado={ !carregando }
+          placeholder="email@email.com"
+          tipoCampo={ TipoCampo.email }
+          titulo="E-mail"
+          onAlterarValor={ (emailDigitado: string) => {
+            onDigitarEmail(emailDigitado);
+          } } />
+        { /** telefone do lead */ }
+        <Campo
+          valor={ telefone }
+          erro={ erroTelefone }
+          habilitado={ !carregando }
+          placeholder="(00) 00000-0000"
+          tipoCampo={ TipoCampo.telefone }
+          titulo="Telefone"
+          onAlterarValor={ (telefoneDigitado: string) => {
+            onDigitarTelefone(telefoneDigitado);
+          } } />
+        { /** botão para ´prosseguir com o cadastro do lead */ }
+        <Botao
+          titulo="Prosseguir"
+          margemTopo={ 30 }
+          carregando={ carregando }
+          habilitado={
+            email != ""
+            && telefone != ""
+            && documento != ""
+            && erroEmail === ""
+            && erroTelefone === ""
+            && erroDocumento === ""
+          }
+          onExecutar={ prosseguirDadosCompletos } />
+        { /** botão para cancelar o cadastro do lead */ }
+        <BotaoCancelar 
+          titulo="Cancelar" 
+          onCancelar={ cancelarCadastro } 
+          margemBottom={ 50 } />
+      </ScrollView>
+    </KeyboardAvoidingView>
   </LeadPulseTela>
 }
 

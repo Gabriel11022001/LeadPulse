@@ -8,7 +8,7 @@ import useLeadPulse from "@/app/hooks/useLeadPulse";
 import { Lead, TipoPessoaLead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { ScrollView } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 
 // tela de cadastro dos dados completo do pf
 const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
@@ -144,70 +144,75 @@ const CadastroCompletoPessoaFisica = ({ navigation }: any) => {
       onVoltar={ () => {
         voltar();
       } } />
-    <ScrollView showsVerticalScrollIndicator={ false }>
-      { /** campo para informar o nome completo do lead */ }
-      <Campo
-        valor={ nomeCompleto }
-        placeholder="Digite o nome completo..."
-        erro={ erroNomeCompleto }
-        habilitado={ !carregando }
-        titulo="Nome Completo"
-        tipoCampo={ TipoCampo.default }
-        onAlterarValor={ (nomeCompletoDigitado: string) => {
-          onDigitarNomeCompleto(nomeCompletoDigitado);
-        } } />
-      { /** campo para informar o rg do lead */ }
-      <Campo
-        valor={ rg }
-        placeholder="Digite o rg..."
-        erro={ erroRg }
-        habilitado={ !carregando }
-        titulo="RG"
-        tipoCampo={ TipoCampo.rg }
-        onAlterarValor={ (rgDigitado: string) => {
-          onDigitarRg(rgDigitado);
-        } } />
-      { /** campo para o usuário informar a data de nascimento */ }
-      <Campo
-        valor={ dataNascimento }
-        erro={ erroDataNascimento }
-        habilitado={ !carregando }
-        placeholder="00/00/0000"
-        tipoCampo={ TipoCampo.data }
-        titulo="Data de nascimento"
-        onAlterarValor={ (dataNascimentoDigitada: string) => {
-          onDigitarDataNascimento(dataNascimentoDigitada);
-        } } />
-      { /** campo para selecionar o gênero */ }
-      <Select
-        opcoes={ generos }
-        titulo="Gênero"
-        opcaoSelecionada={ generos.find(g => g.valor === genero) ?? generos[ 0 ] }
-        onSelecionarOpcao={ (generoSelecionado: SelectOpcao) => {
-          onSelecionarGenero(generoSelecionado);
-        } } />
-      <Botao
-        titulo="Prosseguir"
-        carregando={ carregando }
-        habilitado={
-          rg != ""
-          && dataNascimento != ""
-          && genero != ""
-          && erroRg === ""
-          && erroDataNascimento === ""
-          && nomeCompleto != ""
-          && erroNomeCompleto === ""
-        }
-        onExecutar={ () => {
-          prosseguir();
-        } } />
-      <BotaoCancelar
-        titulo="Cancelar"
-        onCancelar={ () => {
-          cancelarCadastroLead();
-        } }
-        margemBottom={ 50 } />
-    </ScrollView>
+    <KeyboardAvoidingView
+      style={ { flex: 1 } }
+      keyboardVerticalOffset={ 30 }
+      behavior={ Platform.OS === "ios" ? "padding" : "height" }>
+      <ScrollView showsVerticalScrollIndicator={ false }>
+        { /** campo para informar o nome completo do lead */ }
+        <Campo
+          valor={ nomeCompleto }
+          placeholder="Digite o nome completo..."
+          erro={ erroNomeCompleto }
+          habilitado={ !carregando }
+          titulo="Nome Completo"
+          tipoCampo={ TipoCampo.default }
+          onAlterarValor={ (nomeCompletoDigitado: string) => {
+            onDigitarNomeCompleto(nomeCompletoDigitado);
+          } } />
+        { /** campo para informar o rg do lead */ }
+        <Campo
+          valor={ rg }
+          placeholder="Digite o rg..."
+          erro={ erroRg }
+          habilitado={ !carregando }
+          titulo="RG"
+          tipoCampo={ TipoCampo.rg }
+          onAlterarValor={ (rgDigitado: string) => {
+            onDigitarRg(rgDigitado);
+          } } />
+        { /** campo para o usuário informar a data de nascimento */ }
+        <Campo
+          valor={ dataNascimento }
+          erro={ erroDataNascimento }
+          habilitado={ !carregando }
+          placeholder="00/00/0000"
+          tipoCampo={ TipoCampo.data }
+          titulo="Data de nascimento"
+          onAlterarValor={ (dataNascimentoDigitada: string) => {
+            onDigitarDataNascimento(dataNascimentoDigitada);
+          } } />
+        { /** campo para selecionar o gênero */ }
+        <Select
+          opcoes={ generos }
+          titulo="Gênero"
+          opcaoSelecionada={ generos.find(g => g.valor === genero) ?? generos[ 0 ] }
+          onSelecionarOpcao={ (generoSelecionado: SelectOpcao) => {
+            onSelecionarGenero(generoSelecionado);
+          } } />
+        <Botao
+          titulo="Prosseguir"
+          carregando={ carregando }
+          habilitado={
+            rg != ""
+            && dataNascimento != ""
+            && genero != ""
+            && erroRg === ""
+            && erroDataNascimento === ""
+            && nomeCompleto != ""
+            && erroNomeCompleto === ""
+          }
+          onExecutar={ () => {
+            prosseguir();
+          } } />
+        <BotaoCancelar
+          titulo="Cancelar"
+          onCancelar={ () => {
+            cancelarCadastroLead();
+          } }
+          margemBottom={ 50 } />
+      </ScrollView>
+    </KeyboardAvoidingView>
   </LeadPulseTela>
 }
 

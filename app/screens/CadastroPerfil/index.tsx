@@ -11,7 +11,7 @@ import { buscarUsuarioPeloEmailService } from "@/app/service/buscarUsuarioPeloEm
 import cadastrarUsuarioService from "@/app/service/cadastrarUsuarioService";
 import { Usuario } from "@/app/types/usuario";
 import { useState } from "react";
-import { ScrollView, Text } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
 import styles from "./styles";
 
 // tela de cadastro de perfil
@@ -110,86 +110,88 @@ const CadastroPerfil = ({ navigation }: any) => {
       apresentar={ erroGeral != "" }
       mensagem={ erroGeral }
       onFechar={ () => { setErroGeral("") } } />
-    <ScrollView showsVerticalScrollIndicator={ false }>
-      <Text style={ styles.titulo }>Criar conta</Text>
-      <Text style={ styles.subtitulo }>Comece a gerenciar seus leads hoje</Text>
-      { /** campo para o usuário informar o nome completo */ }
-      <Campo
-        valor={ nomeCompleto }
-        erro={ erroNomeCompleto }
-        habilitado={ !carregando && !carregandoAuth }
-        placeholder="Digite o nome completo..."
-        titulo="Nome completo"
-        tipoCampo={ TipoCampo.default }
-        onAlterarValor={ (nomeCompletoDigitado: string) => {
-          onDigitarNome(nomeCompletoDigitado);
-        } } />
-      { /** campo para o usuário informar o e-mail */ }
-      <Campo
-        valor={ email }
-        erro={ erroEmail }
-        habilitado={ !carregando && !carregandoAuth }
-        placeholder="seu@email.com"
-        tipoCampo={ TipoCampo.email }
-        titulo="E-mail"
-        onAlterarValor={ (emailDigitado: string) => {
-          onDigitarEmail(emailDigitado);
-        } } />
-      { /** campo para o usuário informar o telefone */ }
-      <Campo
-        valor={ telefone }
-        erro={ erroTelefone }
-        habilitado={ !carregando && !carregandoAuth }
-        placeholder="ex: (00) 00000-0000"
-        tipoCampo={ TipoCampo.telefone }
-        titulo="Telefone"
-        onAlterarValor={ (telefoneDigitado: string) => {
-          onDigitarTelefone(telefoneDigitado);
-        } } />
-      { /** campo para o usuário informar a senha */ }
-      <Campo
-        valor={ senha }
-        erro={ erroSenha }
-        habilitado={ !carregando && !carregandoAuth }
-        placeholder="Digite a senha..."
-        tipoCampo={ TipoCampo.senha }
-        titulo="Senha"
-        onAlterarValor={ (senhaDigitada: string) => {
-          onDigitarSenha(senhaDigitada);
-        } } />
-      { /** campo para o usuário informar a senha de confirmação */ }
-      <Campo
-        valor={ senhaConfirmar }
-        erro={ erroSenhaConfirmar }
-        habilitado={ !carregando && !carregandoAuth }
-        placeholder="Repita a senha..."
-        tipoCampo={ TipoCampo.senha }
-        titulo="Confirmar senha"
-        onAlterarValor={ (senhaConfirmarDigitada: string) => {
-          onDigitarConfirmarSenha(senhaConfirmarDigitada);
-        } } />
-      { /** botão para o usuário efetuar o cadastro */ }
-      <Botao
-        titulo="Criar conta"
-        carregando={ carregando || carregandoAuth }
-        habilitado={
-          !carregando
-          && !carregandoAuth
-          && nomeCompleto != ""
-          && email != ""
-          && erroNomeCompleto === ""
-          && erroEmail === ""
-          && telefone != ""
-          && erroTelefone === ""
-          && senha != ""
-          && erroSenha === ""
-          && senhaConfirmar != ""
-          && erroSenhaConfirmar === ""
-        }
-        onExecutar={ cadastrar }
-        margemBaixo={ 70 }
-        margemTopo={ 25 } />
-    </ScrollView>
+    <KeyboardAvoidingView style={ { flex: 1 } } keyboardVerticalOffset={ 20 } behavior={ Platform.OS === "ios" ? "padding" : "height" }>
+      <ScrollView showsVerticalScrollIndicator={ false }>
+        <Text style={ styles.titulo }>Criar conta</Text>
+        <Text style={ styles.subtitulo }>Comece a gerenciar seus leads hoje</Text>
+        { /** campo para o usuário informar o nome completo */ }
+        <Campo
+          valor={ nomeCompleto }
+          erro={ erroNomeCompleto }
+          habilitado={ !carregando && !carregandoAuth }
+          placeholder="Digite o nome completo..."
+          titulo="Nome completo"
+          tipoCampo={ TipoCampo.default }
+          onAlterarValor={ (nomeCompletoDigitado: string) => {
+            onDigitarNome(nomeCompletoDigitado);
+          } } />
+        { /** campo para o usuário informar o e-mail */ }
+        <Campo
+          valor={ email }
+          erro={ erroEmail }
+          habilitado={ !carregando && !carregandoAuth }
+          placeholder="seu@email.com"
+          tipoCampo={ TipoCampo.email }
+          titulo="E-mail"
+          onAlterarValor={ (emailDigitado: string) => {
+            onDigitarEmail(emailDigitado);
+          } } />
+        { /** campo para o usuário informar o telefone */ }
+        <Campo
+          valor={ telefone }
+          erro={ erroTelefone }
+          habilitado={ !carregando && !carregandoAuth }
+          placeholder="ex: (00) 00000-0000"
+          tipoCampo={ TipoCampo.telefone }
+          titulo="Telefone"
+          onAlterarValor={ (telefoneDigitado: string) => {
+            onDigitarTelefone(telefoneDigitado);
+          } } />
+        { /** campo para o usuário informar a senha */ }
+        <Campo
+          valor={ senha }
+          erro={ erroSenha }
+          habilitado={ !carregando && !carregandoAuth }
+          placeholder="Digite a senha..."
+          tipoCampo={ TipoCampo.senha }
+          titulo="Senha"
+          onAlterarValor={ (senhaDigitada: string) => {
+            onDigitarSenha(senhaDigitada);
+          } } />
+        { /** campo para o usuário informar a senha de confirmação */ }
+        <Campo
+          valor={ senhaConfirmar }
+          erro={ erroSenhaConfirmar }
+          habilitado={ !carregando && !carregandoAuth }
+          placeholder="Repita a senha..."
+          tipoCampo={ TipoCampo.senha }
+          titulo="Confirmar senha"
+          onAlterarValor={ (senhaConfirmarDigitada: string) => {
+            onDigitarConfirmarSenha(senhaConfirmarDigitada);
+          } } />
+        { /** botão para o usuário efetuar o cadastro */ }
+        <Botao
+          titulo="Criar conta"
+          carregando={ carregando || carregandoAuth }
+          habilitado={
+            !carregando
+            && !carregandoAuth
+            && nomeCompleto != ""
+            && email != ""
+            && erroNomeCompleto === ""
+            && erroEmail === ""
+            && telefone != ""
+            && erroTelefone === ""
+            && senha != ""
+            && erroSenha === ""
+            && senhaConfirmar != ""
+            && erroSenhaConfirmar === ""
+          }
+          onExecutar={ cadastrar }
+          margemBaixo={ 70 }
+          margemTopo={ 25 } />
+      </ScrollView>
+    </KeyboardAvoidingView>
   </LeadPulseTela>
 }
 
