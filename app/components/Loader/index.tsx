@@ -19,7 +19,9 @@ const Loader = ({ carregando, msgLoader }: LoaderProps) => {
 
   return <View style={ styles.containerLoader }>
     <ActivityIndicator color={ config.corPrimaria } size={ 60 } />
-    <Text style={ styles.txtLoader }>{ msgLoader }</Text>
+    { msgLoader ? <Text style={ styles.txtLoader }>{ msgLoader }</Text> : <Text style={ styles.txtLoader }>
+      Carregando, aguarde...
+    </Text> }
   </View>
 }
 

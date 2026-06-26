@@ -8,7 +8,8 @@ import styles from "./styles";
 export enum TipoTela {
 
   cadastroLead,
-  perfil
+  perfil,
+  notificacoes
 
 }
 

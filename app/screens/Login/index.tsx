@@ -62,7 +62,7 @@ const Login = ({ navigation }: any) => {
       }
 
       // redirecionar o usuário para a tela home do app
-      navigation.replace("home");
+      navigation.replace("main");
     } catch (e) {
       // apresentar alerta de erro para o usuário
       setErroGeral(`Erro ao tentar-se efetuar o login: ${ e }`);

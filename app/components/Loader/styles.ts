@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 99999999,
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
   txtLoader: {
     color: "#000",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
     marginTop: 10

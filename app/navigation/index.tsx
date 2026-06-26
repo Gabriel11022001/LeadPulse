@@ -6,9 +6,9 @@ import CadastroEndereco from '../screens/CadastroEndereco';
 import CadastroLead from '../screens/CadastroLead';
 import CadastroPerfil from '../screens/CadastroPerfil';
 import DetalhesLead from '../screens/DetalhesLead';
-import Home from '../screens/Home';
 import Login from '../screens/Login';
 import SplashScreen from '../screens/SplashScreen';
+import BottomNavigationApp from './bottomNavigation';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,10 +36,6 @@ const Navigation = () => {
       componente: CadastroPerfil
     },
     {
-      nome: "home",
-      componente: Home
-    },
-    {
       nome: "cadastro_lead",
       componente: CadastroLead
     },
@@ -59,6 +55,9 @@ const Navigation = () => {
 
   return <NavigationContainer>
     <Stack.Navigator initialRouteName='splash'>
+      <Stack.Screen name="main" component={ BottomNavigationApp } options={ {
+        headerShown: false
+      } } />
       { telas.map(({ nome, componente }) => {
 
         return <Stack.Screen name={ nome } component={ componente } options={ {

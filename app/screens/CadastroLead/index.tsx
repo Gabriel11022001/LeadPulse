@@ -216,7 +216,7 @@ const CadastroLead = ({
   const cancelarCadastro = (): void => {
     limparDadosLead();
 
-    navigation.replace("home");
+    navigation.replace("main");
   }
 
   useEffect(() => {

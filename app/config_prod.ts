@@ -6,7 +6,7 @@ const config: Config = {
   corFundoTela: "",
   corBordas: "#D1D5DB",
   habilitarDadosFake: true,
-  ambiente: "teste"
+  ambiente: "prod"
 }
 
 export default config;

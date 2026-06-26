@@ -2,6 +2,7 @@ import config from "@/app/config";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import styles from "./styles";
 
@@ -11,7 +12,8 @@ export enum TipoBotao {
   avancar,
   editar,
   deletar,
-  confirmar
+  confirmar,
+  logout
 
 }
 
@@ -62,6 +64,11 @@ const Botao = ({
       return <MaterialCommunityIcons name="delete-outline" size={ 25 } color="#fff" />;
     }
 
+    if (tipo === TipoBotao.logout) {
+
+      return <MaterialIcons name="logout" size={ 25 } color="#fff" />;
+    }
+
     return null;
   }
 
@@ -72,7 +79,7 @@ const Botao = ({
       (!habilitado && !carregando) && styles.botaoDesabilitado,
       margemTopo != undefined && { marginTop: margemTopo },
       margemBaixo != undefined && { marginBottom: margemBaixo },
-      tipo === TipoBotao.deletar && styles.botaoDeletar,
+      (tipo === TipoBotao.deletar || tipo === TipoBotao.logout) && styles.botaoDeletar,
       tipo === TipoBotao.confirmar && styles.botaoConfirmar
     ] }
     disabled={ !habilitado }
@@ -80,7 +87,7 @@ const Botao = ({
     { !carregando ? <View style={ styles.containerTextoIcone }>
       <View style={ [
         styles.fundoContainerIconeBotao,
-        tipo === TipoBotao.deletar && styles.fundoContainerIconeBotaoDeletar,
+        (tipo === TipoBotao.deletar || tipo === TipoBotao.logout) && styles.fundoContainerIconeBotaoDeletar,
         tipo === TipoBotao.confirmar && styles.fundoContainerBotaoConfirmar
       ] }>
         { getIconeBotao() } 
