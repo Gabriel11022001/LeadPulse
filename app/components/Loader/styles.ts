@@ -1,3 +1,4 @@
+import config from "@/app/config";
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
@@ -8,15 +9,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: config.corPrimaria,
     alignItems: "center",
     justifyContent: "center",
     zIndex: 99999999,
-    padding: 20
+    padding: 20,
+    opacity: 0.95
   },
   txtLoader: {
-    color: "#000",
-    fontSize: 20,
+    color: "#fff",
+    fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
     marginTop: 10

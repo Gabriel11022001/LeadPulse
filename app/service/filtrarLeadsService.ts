@@ -1,9 +1,15 @@
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { Lead, TipoPessoaLead } from "../types/lead";
 
+export type FiltroLeads = {
+
+  status?: string;
+
+}
+
 // filtrar os leads na base de dados
-const filtrarLeadsService = async (filtro?: string) => {
+const filtrarLeadsService = async (filtro?: FiltroLeads) => {
 
   try {
     const leads: Array<Lead> = [];
@@ -12,10 +18,15 @@ const filtrarLeadsService = async (filtro?: string) => {
 
     let q = null;
 
-    if (filtro && filtro.length > 0) {
+    let statusFiltro: string = (filtro && filtro.status && filtro.status != "todos") ? filtro.status : ""; 
+
+    if (filtro) {
+      console.log("Aplicar filtro na listagem de leads...");
+      console.log(filtro);
       // aplicar filtro de texto
       q = query(
-        leadsRef
+        leadsRef,
+        statusFiltro != "" ? where("status", "==", statusFiltro) : where("status", "!=", "")
       );
     } else {
       // buscar todos
