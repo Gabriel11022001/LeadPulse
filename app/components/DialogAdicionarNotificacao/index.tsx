@@ -1,4 +1,6 @@
+import config from "@/app/config";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, Text, View } from "react-native";
 import Botao, { TipoBotao } from "../Botao";
 import Campo, { TipoCampo } from "../Campo";
@@ -37,6 +39,10 @@ const DialogAdicionarNotificacao = ({
       <Pressable onPress={ onFechar }>
         <AntDesign name="close" size={ 30 } color="#000" />
       </Pressable>
+    </View>
+    { /** container com o ícone de notificação */ }
+    <View style={ styles.containerIconeNotificacoes }>
+      <Ionicons name="notifications-outline" size={ 50 } color={ config.corPrimaria } />
     </View>
     <Text style={ styles.titulo }>Cadastrar Notificação</Text>
     <Text style={ styles.subtitulo }>Preencha as informações abaixo para criar uma nova notificação.</Text>

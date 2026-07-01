@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 22,
     marginBottom: 10,
-    marginTop: 40,
+    marginTop: 20,
     textAlign: "center"
   },
   subtitulo: {
@@ -35,6 +35,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginStart: 20,
     marginEnd: 20
+  },
+  containerIconeNotificacoes: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40
   }
 
 });
