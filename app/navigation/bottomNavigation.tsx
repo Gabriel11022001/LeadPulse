@@ -1,7 +1,9 @@
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Zocial from '@expo/vector-icons/Zocial';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import config from '../config';
+import GestaoLeads from '../screens/GestaoLeads';
 import Home from '../screens/Home';
 import Notificacoes from '../screens/Notificacoes';
 import Perfil from '../screens/Perfil';
@@ -36,6 +38,11 @@ const BottomNavigationApp = () => {
           return <Ionicons name="notifications-outline" size={ 30 } color={ focused ? config.corPrimaria : "#93C5FD" } />;
         }
 
+        if (route.name === "gestao_leads") {
+
+          return <Zocial name="persona" size={ 30 } color={ focused ? config.corPrimaria : "#93C5FD" }  />;
+        }
+
       },
       tabBarLabelStyle: {
         fontSize: 12,
@@ -47,6 +54,10 @@ const BottomNavigationApp = () => {
      }) }>
       { /** tela home do app */ }
       <Tab.Screen name="home" component={ Home } />
+      { /** tela de gestão de leads */ }
+      <Tab.Screen name="gestao_leads" component={ GestaoLeads } options={ {
+        title: "Leads"
+      } } />
       { /** tela de notificações do app */ }
       <Tab.Screen name="notificacoes" component={ Notificacoes } />
       { /** tela de perfil do app */ }

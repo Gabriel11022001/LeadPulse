@@ -46,7 +46,7 @@ const LeadItem = ({ lead, onVisualizar, index, ultimoElemento }: LeadItemProps) 
 
     if (status === "cliente") {
 
-      return "#6ab04c";
+      return "#7C3AED";
     }
 
     return "#000";
