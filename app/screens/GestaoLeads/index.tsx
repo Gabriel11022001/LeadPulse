@@ -1,6 +1,7 @@
 import LeadPulseTela from "@/app/components/LeadPulseTela";
-import Loader from "@/app/components/Loader";
+import ListaLeads from "@/app/components/ListaLeads";
 import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
+import buscarLeadPeloIdService from "@/app/service/buscarLeadPeloIdService";
 import filtrarLeadsService from "@/app/service/filtrarLeadsService";
 import { Lead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
@@ -13,12 +14,9 @@ const GestaoLeads = ({ navigation }: any) => {
   const [ carregando, setCarregando ] = useState<boolean>(false);
   const [ carregandoAtualizarStatusLead, setCarregandoAtualizarStatusLead ] = useState<boolean>(false);
   const [ leads, setLeads ] = useState<Lead[]>([]);
-
-  // leads por status
-  const [ clientes, setClientes ] = useState<Array<Lead>>([]);
-  const [ qualificados, setQualificados ] = useState<Array<Lead>>([]);
-  const [ desqualificados, setDesqualificados ] = useState<Array<Lead>>([]);
-  const [ emQualificacao, setEmQualificacao ] = useState<Array<Lead>>([]);
+  const [ expandirVerMaisDetalhes, setExpandirVerMaisDetalhes ] = useState<boolean>(false);
+  const [ leadVisualizarAtual, setLeadVisualizarAtual ] = useState<Lead | null>(null);
+  const [ carregandoVisualizarLead, setCarregandoVisualizarLead ] = useState<boolean>(false);
 
   // listar os leads
   const carregarLeads = async () => {
@@ -34,8 +32,6 @@ const GestaoLeads = ({ navigation }: any) => {
         setLeads([]);
       } else {
         setLeads(leadsCadastrados);
-
-        separarLeadsPorStatus(leadsCadastrados);
       }
 
     } catch (e) {
@@ -48,20 +44,25 @@ const GestaoLeads = ({ navigation }: any) => {
 
   // alterar o status do lead
   const alterarStatusLead = async (id: string, raiaMover: string, raiaAtual: string) => {
-    console.log(`Mover o lead de id ${ id } da raia ${ raiaAtual } para ${ raiaMover }`);
+
   }
 
-  // separar os leads pelo status
-  const separarLeadsPorStatus = (leads: Array<Lead>) => {
-    const emQualificacao: Array<Lead> = leads.filter(l => l.status === "aguardando_qualificacao");
-    const clientes: Array<Lead> = leads.filter(l => l.status === "cliente");
-    const qualificados: Array<Lead> = leads.filter(l => l.status === "qualificado");
-    const cancelados: Array<Lead> = leads.filter(l => l.status === "desqualificado");
+  // visualizar o lead
+  const visualizarLead = async (id: string) => {
+    console.log("Visualizar os dados do lead de id " + id);
 
-    setEmQualificacao(emQualificacao);
-    setClientes(clientes);
-    setQualificados(qualificados);
-    setDesqualificados(cancelados);
+    try {
+      setCarregandoVisualizarLead(true);
+      setLeadVisualizarAtual(null);
+
+      const lead: Lead | null = await buscarLeadPeloIdService(id);
+      setLeadVisualizarAtual(lead);
+    } catch (e) {
+      
+    } finally {
+      setCarregandoVisualizarLead(false);
+    }
+
   }
 
   useFocusEffect(useCallback(() => {
@@ -77,10 +78,23 @@ const GestaoLeads = ({ navigation }: any) => {
         navigation.goBack();
       } }
       tela={ TipoTela.perfil } />
-    { /** loader de carregamento da tela */ }
-    <Loader carregando={ carregando || carregandoAtualizarStatusLead } />
     <ScrollView showsVerticalScrollIndicator={ false }>
-      
+      { /** lista dos leads cadastrados */ }
+      <ListaLeads
+        leads={ leads }
+        leadVisualizarAtual={ leadVisualizarAtual }
+        carregando={ carregando || carregandoAtualizarStatusLead }
+        onVisualizarLead={ (idLeadVisualizar: string) => {
+          const expandir: boolean = !expandirVerMaisDetalhes;
+          setExpandirVerMaisDetalhes(expandir);
+
+          if (expandir) {
+            visualizarLead(idLeadVisualizar);
+          }
+
+        } }
+        expandirVerMaisDetalhes={ expandirVerMaisDetalhes }
+        carregandoVisualizarLead={ carregandoVisualizarLead } />
     </ScrollView>
   </LeadPulseTela>
 }
