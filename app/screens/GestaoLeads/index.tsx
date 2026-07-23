@@ -1,12 +1,12 @@
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import ListaLeads from "@/app/components/ListaLeads";
 import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
-import buscarLeadPeloIdService from "@/app/service/buscarLeadPeloIdService";
+import filtrarLeadsPorTextoService from "@/app/service/filtrarLeadsPorTextoService";
 import filtrarLeadsService from "@/app/service/filtrarLeadsService";
 import { Lead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { ScrollView } from "react-native";
+import { Alert } from "react-native";
 
 // tela de gestão de leads
 const GestaoLeads = ({ navigation }: any) => {
@@ -14,9 +14,7 @@ const GestaoLeads = ({ navigation }: any) => {
   const [ carregando, setCarregando ] = useState<boolean>(false);
   const [ carregandoAtualizarStatusLead, setCarregandoAtualizarStatusLead ] = useState<boolean>(false);
   const [ leads, setLeads ] = useState<Lead[]>([]);
-  const [ expandirVerMaisDetalhes, setExpandirVerMaisDetalhes ] = useState<boolean>(false);
-  const [ leadVisualizarAtual, setLeadVisualizarAtual ] = useState<Lead | null>(null);
-  const [ carregandoVisualizarLead, setCarregandoVisualizarLead ] = useState<boolean>(false);
+  const [ filtroTextoLead, setTextoFiltroLead ] = useState<string>("");
 
   // listar os leads
   const carregarLeads = async () => {
@@ -31,7 +29,7 @@ const GestaoLeads = ({ navigation }: any) => {
       if (leadsCadastrados.length === 0) {
         setLeads([]);
       } else {
-        setLeads(leadsCadastrados);
+        setLeads(organizarLeadsOrdemAlfabetica(leadsCadastrados));
       }
 
     } catch (e) {
@@ -42,25 +40,62 @@ const GestaoLeads = ({ navigation }: any) => {
 
   }
 
-  // alterar o status do lead
-  const alterarStatusLead = async (id: string, raiaMover: string, raiaAtual: string) => {
+  // organizar os leads em ordem alfabética
+  const organizarLeadsOrdemAlfabetica = (leads: Array<Lead>): Array<Lead> => {
 
-  }
+    return [...leads].sort((a, b) => {
+      const nomeA = (a.nomeCompleto ?? a.razaoSocial ?? "").trim();
+      const nomeB = (b.nomeCompleto ?? b.razaoSocial ?? "").trim();
+
+      return nomeA.localeCompare(nomeB, "pt-BR", {
+        sensitivity: "base",
+      });
+    });
+  };
 
   // visualizar o lead
   const visualizarLead = async (id: string) => {
     console.log("Visualizar os dados do lead de id " + id);
 
-    try {
-      setCarregandoVisualizarLead(true);
-      setLeadVisualizarAtual(null);
+    navigation.navigate("detalhes_lead", { idLeadVisualizar: id });
+  }
 
-      const lead: Lead | null = await buscarLeadPeloIdService(id);
-      setLeadVisualizarAtual(lead);
+  // filtrar o lead pelo texto digitado no campo de pesquisa
+  const filtrarLeadsPeloTexto = async () => {
+
+    try {
+      const textoFiltro: string = filtroTextoLead;
+
+      if (textoFiltro.trim().length === 0) {
+        // filtrar todos
+        await carregarLeads();
+      } else {
+        setCarregando(true);
+
+        // aplicar o filtro e retornar os leads
+        const retorno: { quantidade_encontrados: number, leads: Array<Lead> } = await filtrarLeadsPorTextoService(textoFiltro);
+
+        if (retorno.quantidade_encontrados === 0) {
+          await carregarLeads();
+
+          Alert.alert("Atenção!", "Não foram encontrados leads por esse termo!", [
+            {
+              onPress: () => null,
+              style: "default",
+              text: "Ok"
+            }
+          ]);
+        } else {
+          setLeads(retorno.leads);
+        }
+
+      }
+
     } catch (e) {
-      
+      // apresetar alerta de erro
+      console.log(`Erro ao tentar-se filtrar o lead: ${ e }`);
     } finally {
-      setCarregandoVisualizarLead(false);
+      setCarregando(false);
     }
 
   }
@@ -78,24 +113,23 @@ const GestaoLeads = ({ navigation }: any) => {
         navigation.goBack();
       } }
       tela={ TipoTela.perfil } />
-    <ScrollView showsVerticalScrollIndicator={ false }>
-      { /** lista dos leads cadastrados */ }
-      <ListaLeads
-        leads={ leads }
-        leadVisualizarAtual={ leadVisualizarAtual }
-        carregando={ carregando || carregandoAtualizarStatusLead }
-        onVisualizarLead={ (idLeadVisualizar: string) => {
-          const expandir: boolean = !expandirVerMaisDetalhes;
-          setExpandirVerMaisDetalhes(expandir);
-
-          if (expandir) {
-            visualizarLead(idLeadVisualizar);
-          }
-
-        } }
-        expandirVerMaisDetalhes={ expandirVerMaisDetalhes }
-        carregandoVisualizarLead={ carregandoVisualizarLead } />
-    </ScrollView>
+    { /** lista dos leads cadastrados */ }
+    <ListaLeads
+      leads={ leads }
+      carregando={ carregando || carregandoAtualizarStatusLead }
+      onVisualizarLead={ (idLeadVisualizar: string) => {
+        visualizarLead(idLeadVisualizar);
+      } }
+      onClickOperacoes={ () => {
+          
+      } }
+      textoFiltro={ filtroTextoLead }
+      onDigitarTextoFiltro={ (textoFiltroDigitado: string) => {
+        setTextoFiltroLead(textoFiltroDigitado);
+      } }
+      onClickFiltrar={ () => {
+        filtrarLeadsPeloTexto();
+      } } />
   </LeadPulseTela>
 }
 
