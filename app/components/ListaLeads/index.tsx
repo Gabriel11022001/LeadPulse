@@ -80,6 +80,10 @@ const ListaLeads = ({
   // header da lista de leads
   const HeaderListaLeads = (
     <View>
+      <View style={ styles.containerLeadsFiltrados }>
+        <Feather name="filter" size={ 20 } color={ config.corPrimaria } />
+        <Text style={ styles.txtLeadsFiltrados }>Leads Filtrados: ({ leads.length })</Text>
+      </View>
       <CampoPesquisaLead
         filtroTexto={ textoFiltro }
         onDigitarTextoFiltro={ onDigitarTextoFiltro }
@@ -92,7 +96,7 @@ const ListaLeads = ({
   const LoaderCarregamentoLeads = (
     <View style={ styles.leadCarregando }>
       <ActivityIndicator color={ config.corPrimaria } size={ 40 } />
-      <Text>Carregando, aguarde...</Text>
+      <Text style={ styles.txtCarregando }>Carregando, aguarde...</Text>
     </View>
   )
 

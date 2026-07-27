@@ -1,8 +1,11 @@
+import FiltroLeads from "@/app/components/FiltroLeads";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import ListaLeads from "@/app/components/ListaLeads";
 import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
+import filtrarLeadsParametrosService from "@/app/service/filtrarLeadsParametrosService";
 import filtrarLeadsPorTextoService from "@/app/service/filtrarLeadsPorTextoService";
 import filtrarLeadsService from "@/app/service/filtrarLeadsService";
+import FiltroLeadsType from "@/app/types/filtroLeads";
 import { Lead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
@@ -15,6 +18,17 @@ const GestaoLeads = ({ navigation }: any) => {
   const [ carregandoAtualizarStatusLead, setCarregandoAtualizarStatusLead ] = useState<boolean>(false);
   const [ leads, setLeads ] = useState<Lead[]>([]);
   const [ filtroTextoLead, setTextoFiltroLead ] = useState<string>("");
+  const [ abrirFiltroLeads, setAbrirFiltroLeads ] = useState<boolean>(false);
+  
+  // states do filtro de leads
+  const [ nome, setNome ] = useState<string>("");
+  const [ documento, setDocumento ] = useState<string>("");
+  const [ telefone, setTelefone ] = useState<string>("");
+  const [ email, setEmail ] = useState<string>("");
+  const [ erroNome, setErroNome ] = useState<string>("");
+  const [ erroDocumento, setErroDocumento ] = useState<string>("");
+  const [ erroTelefone, setErroTelefone ] = useState<string>("");
+  const [ erroEmail, setErroEmail ] = useState<string>("");
 
   // listar os leads
   const carregarLeads = async () => {
@@ -100,11 +114,134 @@ const GestaoLeads = ({ navigation }: any) => {
 
   }
 
+  // resetar o filtro dos leads
+  const resetarFiltro = (): void => {
+    setNome("");
+    setTelefone("");
+    setEmail("");
+    setDocumento("");
+    setErroNome("");
+    setErroDocumento("");
+    setErroEmail("");
+    setErroTelefone("");
+    setAbrirFiltroLeads(false);
+  }
+
+  // filtrar os leads
+  const filtrarLeads = async () => {
+
+    try {
+      setAbrirFiltroLeads(false);
+      setCarregando(true);
+
+      if (nome.trim().length == 0
+      && telefone.trim().length == 0
+      && email.trim().length == 0
+      && documento.trim().length == 0) {
+        await carregarLeads();
+
+        return;
+      }
+
+      const filtro: FiltroLeadsType = {
+        documento: documento.trim(),
+        nome: nome.trim(),
+        email: email.trim(),
+        telefone: telefone.trim()
+      }
+
+      const leadsFiltrados: Array<Lead> = await filtrarLeadsParametrosService(filtro);
+
+      console.log("leads filtrados: " + leadsFiltrados.length);
+
+      if (leadsFiltrados.length === 0) {
+        Alert.alert("Atenção!", "Não foram encontrados leads com os termos informados.", [
+          {
+            onPress: () => null,
+            style: "default",
+            text: "Ok"
+          }
+        ]);
+        await carregarLeads();
+      } else {
+        setLeads(leadsFiltrados);
+      }
+
+    } catch (e) {
+      // apresentar alerta de erro
+      console.log(`Erro ao tentar-se filtrar os leads: ${ e }`);
+    } finally {
+      setCarregando(false);
+    }
+
+  }
+
   useFocusEffect(useCallback(() => {
+    setTextoFiltroLead("");
+    resetarFiltro();
     carregarLeads();
   }, []));
   
   return <LeadPulseTela>
+    { /** filtro de leads */ }
+    <FiltroLeads
+      nome={ nome }
+      documento={ documento }
+      email={ email }
+      telefone={ telefone }
+      erroNome={ erroNome }
+      erroDocumento={ erroDocumento }
+      erroEmail={ erroEmail }
+      erroTelefone={ erroTelefone }
+      apresentar={ abrirFiltroLeads }
+      onLimparFiltro={ resetarFiltro }
+      onFechar={ () => {
+        setAbrirFiltroLeads(false);
+      } }
+      onDigitar={ (campo: string, valor: string) => {
+
+        if (campo === "nome") {
+          setNome(valor);
+          setErroNome("");
+
+          if (valor.trim().length > 0 && valor.trim().length < 3) {
+            setErroNome("O nome/razão social deve possuir no mínimo 3 caracteres.");
+          }
+
+        }
+
+        if (campo === "documento") {
+          setDocumento(valor);
+          setErroDocumento("");
+
+          if (valor.trim().length > 0) {
+
+          }
+
+        }
+
+        if (campo === "telefone") {
+          setTelefone(valor);
+          setErroTelefone("");
+
+          if (valor.trim().length > 0) {
+
+          }
+
+        }
+
+        if (campo === "email") {
+          setEmail(valor);
+          setErroEmail("");
+
+          if (valor.trim().length > 0) {
+
+          }
+
+        }
+
+      } }
+      onFiltrar={ filtrarLeads } />
     { /** menu do topo */ }
     <MenuTopo
       titulo="Leads"
@@ -112,7 +249,11 @@ const GestaoLeads = ({ navigation }: any) => {
       onVoltar={ () => {
         navigation.goBack();
       } }
-      tela={ TipoTela.perfil } />
+      tela={ TipoTela.gestaoLeads }
+      onAbrirFiltro={ () => {
+        // abrir o dialog do filtro de leads
+        setAbrirFiltroLeads(true);
+      } } />
     { /** lista dos leads cadastrados */ }
     <ListaLeads
       leads={ leads }

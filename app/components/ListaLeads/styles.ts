@@ -10,6 +10,13 @@ export default StyleSheet.create({
     width: "100%",
     height: "100%"
   },
+  txtCarregando: {
+    color: "#000",
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 7
+  },
   item: {
     width: "95%",
     marginStart: "2.5%",
@@ -113,6 +120,21 @@ export default StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
     marginEnd: 5
+  },
+  containerLeadsFiltrados: {
+    width: "95%",
+    marginStart: "2.5%",
+    marginEnd: "2.5%",
+    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end"
+  },
+  txtLeadsFiltrados: {
+    color: config.corPrimaria,
+    fontWeight: "bold",
+    fontSize: 15,
+    marginStart: 5
   }
   
 });

@@ -1,5 +1,6 @@
 import config from "@/app/config";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, Text, View } from "react-native";
@@ -9,7 +10,8 @@ export enum TipoTela {
 
   cadastroLead,
   perfil,
-  notificacoes
+  notificacoes,
+  gestaoLeads
 
 }
 
@@ -19,6 +21,7 @@ interface MenuTopoProps {
   subtitulo?: string;
   onVoltar?: () => void;
   tela: TipoTela;
+  onAbrirFiltro?: () => void;
   
 }
 
@@ -27,7 +30,8 @@ const MenuTopo = ({
   titulo,
   subtitulo,
   onVoltar,
-  tela
+  tela,
+  onAbrirFiltro
 }: MenuTopoProps) => {
 
   const obterIconeTela = () => {
@@ -35,6 +39,11 @@ const MenuTopo = ({
     if (tela === TipoTela.cadastroLead) {
 
       return <Ionicons name="person-outline" size={ 30 } color={ config.corPrimaria } />;
+    }
+
+    if (tela === TipoTela.gestaoLeads) {
+      
+      return <Feather name="filter" size={ 30 } color={ config.corPrimaria } />;
     }
 
     return <AntDesign name="menu" size={ 30 } color={ config.corPrimaria } />;
@@ -61,9 +70,11 @@ const MenuTopo = ({
         <Text style={ styles.tituloTela }>{ titulo }</Text>
         { subtitulo && <Text style={ styles.subtitulo }>{ subtitulo }</Text> }
       </View>
-      <View style={ styles.containerIconeTela }>
+      { tela === TipoTela.gestaoLeads ? <Pressable style={ styles.containerIconeTela } onPress={ onAbrirFiltro }>
         { obterIconeTela() }
-      </View>
+      </Pressable> : <View style={ styles.containerIconeTela }>
+        { obterIconeTela() }
+      </View> }
     </View>
   </LinearGradient>
 }
