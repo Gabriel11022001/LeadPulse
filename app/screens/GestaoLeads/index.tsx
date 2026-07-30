@@ -2,6 +2,7 @@ import FiltroLeads from "@/app/components/FiltroLeads";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import ListaLeads from "@/app/components/ListaLeads";
 import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
+import deletarLeadService from "@/app/service/deletarLeadService";
 import filtrarLeadsParametrosService from "@/app/service/filtrarLeadsParametrosService";
 import filtrarLeadsPorTextoService from "@/app/service/filtrarLeadsPorTextoService";
 import filtrarLeadsService from "@/app/service/filtrarLeadsService";
@@ -29,6 +30,64 @@ const GestaoLeads = ({ navigation }: any) => {
   const [ erroDocumento, setErroDocumento ] = useState<string>("");
   const [ erroTelefone, setErroTelefone ] = useState<string>("");
   const [ erroEmail, setErroEmail ] = useState<string>("");
+
+  const [ apresentarOperacoes, setApresentarOperacoes ] = useState<boolean>(false);
+  const [ idLeadOperacoes, setIdLeadOperacoes ] = useState<string>("");
+
+  const confirmarDeletarLead = async () => {
+
+    try {
+      setCarregando(true);
+
+      await deletarLeadService(idLeadOperacoes ?? "");
+
+      Alert.alert("Sucesso!", "Lead deletado com sucesso!", [
+        {
+          style: "default",
+          text: "Ok",
+          onPress: () => {
+            setTextoFiltroLead("");
+            resetarFiltro();
+            setIdLeadOperacoes("");
+            setApresentarOperacoes(false);
+            carregarLeads();
+          }
+        }
+      ]);
+    } catch (e) {
+      
+      throw e;
+    } finally {
+      setCarregando(false);
+    }
+
+  }
+
+  const deletarLead = async () => {
+
+    try {
+      Alert.alert("Atenção!", "Deseja mesmo deletar o lead?", [
+        {
+          style: "default",
+          text: "Sim",
+          onPress: () => {
+            confirmarDeletarLead();
+          }
+        },
+        {
+          style: "cancel",
+          text: "Cancelar",
+          onPress: () => {
+            setApresentarOperacoes(false);
+            setIdLeadOperacoes("");
+          }
+        }
+      ]);
+    } catch (e) {
+      console.log(`Erro ao tentar-se deletar o lead: ${ e }`);
+    }
+
+  }
 
   // listar os leads
   const carregarLeads = async () => {
@@ -179,6 +238,8 @@ const GestaoLeads = ({ navigation }: any) => {
   useFocusEffect(useCallback(() => {
     setTextoFiltroLead("");
     resetarFiltro();
+    setIdLeadOperacoes("");
+    setApresentarOperacoes(false);
     carregarLeads();
   }, []));
   
@@ -194,7 +255,10 @@ const GestaoLeads = ({ navigation }: any) => {
       erroEmail={ erroEmail }
       erroTelefone={ erroTelefone }
       apresentar={ abrirFiltroLeads }
-      onLimparFiltro={ resetarFiltro }
+      onLimparFiltro={ () => {
+        resetarFiltro();
+        carregarLeads();
+      } }
       onFechar={ () => {
         setAbrirFiltroLeads(false);
       } }
@@ -261,8 +325,17 @@ const GestaoLeads = ({ navigation }: any) => {
       onVisualizarLead={ (idLeadVisualizar: string) => {
         visualizarLead(idLeadVisualizar);
       } }
-      onClickOperacoes={ () => {
-          
+      onClickOperacoes={ (idLead: string) => {
+        console.log("Apresentar operações para o lead de id: " + idLead);
+
+        setIdLeadOperacoes(idLead);
+
+        if (idLead === idLeadOperacoes) {
+          setApresentarOperacoes(!apresentarOperacoes);
+        } else {
+          setApresentarOperacoes(true);
+        }
+
       } }
       textoFiltro={ filtroTextoLead }
       onDigitarTextoFiltro={ (textoFiltroDigitado: string) => {
@@ -270,6 +343,17 @@ const GestaoLeads = ({ navigation }: any) => {
       } }
       onClickFiltrar={ () => {
         filtrarLeadsPeloTexto();
+      } }
+      idLeadOperacoes={ idLeadOperacoes }
+      apresentarOperacoes={ apresentarOperacoes }
+      onClickEditar={ () => {
+        visualizarLead(idLeadOperacoes);
+      } }
+      onClickDeletar={ () => {
+        deletarLead();
+      } }
+      onClickRedistribuir={ () => {
+
       } } />
   </LeadPulseTela>
 }

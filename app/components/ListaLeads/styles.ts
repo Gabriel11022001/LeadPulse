@@ -135,6 +135,23 @@ export default StyleSheet.create({
     fontWeight: "bold",
     fontSize: 15,
     marginStart: 5
+  },
+  containerOperacoes: {
+    padding: 10,
+    backgroundColor: "#f1f1f1",
+    borderRadius: 12
+  },
+  operacao: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginTop: 10,
+    marginBottom: 10
+  },
+  txtOperacao: {
+    color: "#000",
+    fontSize: 15,
+    marginStart: 5
   }
   
 });

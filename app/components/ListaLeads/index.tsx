@@ -1,9 +1,12 @@
 import config from "@/app/config";
 import { Lead, TipoPessoaLead } from "@/app/types/lead";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 import CampoPesquisaLead from "../CampoPesquisaLead";
@@ -15,10 +18,15 @@ interface ListaLeadsProps {
   carregando: boolean;
   leads: Array<Lead>;
   onVisualizarLead: (id: string) => void;
-  onClickOperacoes: () => void;
+  onClickOperacoes: (idLead: string) => void;
   textoFiltro: string;
   onDigitarTextoFiltro: (textoFiltroDigitado: string) => void;
   onClickFiltrar: () => void;
+  apresentarOperacoes: boolean;
+  idLeadOperacoes: string;
+  onClickEditar: () => void;
+  onClickDeletar: () => void;
+  onClickRedistribuir: () => void;
 
 }
 
@@ -30,7 +38,12 @@ const ListaLeads = ({
   onClickOperacoes,
   textoFiltro,
   onDigitarTextoFiltro,
-  onClickFiltrar
+  onClickFiltrar,
+  apresentarOperacoes,
+  idLeadOperacoes,
+  onClickEditar,
+  onClickDeletar,
+  onClickRedistribuir
 }: ListaLeadsProps) => {
 
   const getStatusNome = (status: string): string => {
@@ -143,7 +156,7 @@ const ListaLeads = ({
         <View style={ [
           styles.container,
           {
-            height: 220
+            height: 300
           }
         ] }>
           { /** primeira letra do nome do lead */ }
@@ -199,10 +212,29 @@ const ListaLeads = ({
             </View>
             { /** operações */ }
             <TouchableOpacity
-              onPress={ onClickOperacoes }
+              onPress={ () => {
+                onClickOperacoes(id);
+              } }
               style={ styles.botaoOperacoes }>
               <SimpleLineIcons name="options-vertical" size={ 20 } color="black" />
             </TouchableOpacity>
+            { (idLeadOperacoes != "" && idLeadOperacoes === id && apresentarOperacoes) && <View style={ styles.containerOperacoes }>
+              { /** editar lead */ }
+              <TouchableOpacity style={ styles.operacao } onPress={ onClickEditar }>
+                <AntDesign name="edit" size={ 24 } color="black" />
+                <Text style={ styles.txtOperacao }>Editar</Text>
+              </TouchableOpacity>
+              { /** deletar lead */ }
+              <TouchableOpacity style={ styles.operacao } onPress={ onClickDeletar }>
+                <MaterialIcons name="delete-outline" size={ 24 } color="black" />
+                <Text style={ styles.txtOperacao }>Deletar</Text>
+              </TouchableOpacity>
+              { /** redistribuir lead */ }
+              <TouchableOpacity style={ styles.operacao } onPress={ onClickRedistribuir }>
+                <Ionicons name="person-outline" size={ 24 } color="black" />
+                <Text style={ styles.txtOperacao }>Redistribuir</Text>
+              </TouchableOpacity>
+            </View> }
             { /** ver mais detalhes */ }
             <TouchableOpacity
               onPress={ () => {
