@@ -33,7 +33,7 @@ const GestaoLeads = ({ navigation }: any) => {
 
   const [ apresentarOperacoes, setApresentarOperacoes ] = useState<boolean>(false);
   const [ idLeadOperacoes, setIdLeadOperacoes ] = useState<string>("");
-
+  
   const confirmarDeletarLead = async () => {
 
     try {
@@ -317,6 +317,10 @@ const GestaoLeads = ({ navigation }: any) => {
       onAbrirFiltro={ () => {
         // abrir o dialog do filtro de leads
         setAbrirFiltroLeads(true);
+      } }
+      onClickRedistribuirLeads={ () => {
+        // redirecionar o usuário para a tela de redistribuir leads
+        navigation.navigate("redistribuir_leads");
       } } />
     { /** lista dos leads cadastrados */ }
     <ListaLeads

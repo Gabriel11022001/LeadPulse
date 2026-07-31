@@ -7,6 +7,7 @@ import CadastroLead from '../screens/CadastroLead';
 import CadastroPerfil from '../screens/CadastroPerfil';
 import DetalhesLead from '../screens/DetalhesLead';
 import Login from '../screens/Login';
+import RedistribuirLeads from '../screens/RedistribuirLeads';
 import SplashScreen from '../screens/SplashScreen';
 import BottomNavigationApp from './bottomNavigation';
 
@@ -50,6 +51,10 @@ const Navigation = () => {
     {
       nome: "detalhes_lead",
       componente: DetalhesLead
+    },
+    {
+      nome: "redistribuir_leads",
+      componente: RedistribuirLeads
     }
   ];
 
