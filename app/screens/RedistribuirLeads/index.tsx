@@ -3,10 +3,12 @@ import LeadPulseTela from "@/app/components/LeadPulseTela";
 import Loader from "@/app/components/Loader";
 import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
 import config from "@/app/config";
+import useAuth from "@/app/hooks/useAuth";
 import filtrarLeadsService from "@/app/service/filtrarLeadsService";
+import listarUsuariosAtivosService from "@/app/service/listarUsuariosService";
+import redistribuirLeadsService from "@/app/service/redistribuirLeadsService";
 import { Lead, TipoPessoaLead } from "@/app/types/lead";
 import { Usuario } from "@/app/types/usuario";
-import gerarListaUsuariosMock from "@/app/utils/gerarListaUsuariosMock";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import { useFocusEffect } from "@react-navigation/native";
@@ -17,6 +19,7 @@ import styles from "./styles";
 // tela de redistribuição de leads
 const RedistribuirLeads = ({ navigation }: any) => {
 
+  const { getUsuarioLogado } = useAuth();
   const [ carregando, setCarregando ] = useState<boolean>(false);
   const [ leads, setLeads ] = useState<Array<Lead>>([]);
   const [ usuarios, setUsuarios ] = useState<Array<Usuario>>([]);
@@ -46,9 +49,7 @@ const RedistribuirLeads = ({ navigation }: any) => {
         setLeads(leadsLista);
 
         // listar os usuários
-        //const usuariosLista: Array<Usuario> = await listarUsuariosAtivosService();
-
-        const usuariosLista: Array<Usuario> = gerarListaUsuariosMock();
+        const usuariosLista: Array<Usuario> = await listarUsuariosAtivosService();
 
         if (usuariosLista.length === 0) {
           Alert.alert("Atenção!", "Não existem usuários ativos para redistribuição!", [
@@ -127,15 +128,26 @@ const RedistribuirLeads = ({ navigation }: any) => {
       if (idUsuarioSelecionado === "") {
         setApresentarAlertaSelecioneUsuario(true);
       } else {
-        console.log("Redistribuir o lead para o usuário: " + idUsuarioSelecionado);
+        console.log(`Redistribuir ${ leadsRedistribuir.length } para o usuário com id_usuario = ${ idUsuarioSelecionado }`);
 
-        
+        setCarregando(true);
+        setApresentarDialogUsuarios(false);
+
+        await redistribuirLeadsService(idUsuarioSelecionado, leadsRedistribuir);
+
+        setIdUsuarioSelecionado("");
+        setLeadsRedistribuir([]);
+        setUsuarios([]);
+
+        await listarUsuariosLeads();
       }
 
     } catch (e) {
+      console.log(`Erro ao tentar-se redistribuir os leads: ${ e }`);
 
+      // apresentar alerta de erro para o usuário
     } finally {
-
+      setCarregando(false);
     }
 
   }

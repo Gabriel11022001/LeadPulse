@@ -1,12 +1,15 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Lead, TipoPessoaLead } from "../types/lead";
+import { Usuario } from "../types/usuario";
+import { getUsuarioLogadoApp } from "../utils/getUsuarioLogado";
 
 // filtrar os leads por texto
 const filtrarLeadsPorTextoService = async (texto: string) => {
 
   try {
     const leads: Array<Lead> = [];
+    const usuarioLogadoApp: Usuario = await getUsuarioLogadoApp();
 
     const snapshot = await getDocs(collection(db, "leads"));
 
@@ -15,11 +18,13 @@ const filtrarLeadsPorTextoService = async (texto: string) => {
         const nome: string = lead.data().tipo_pessoa === "pf" ? lead.data().nome_completo : lead.data().razao_social;
         const email: string = lead.data().email;
         const telefone: string = lead.data().telefone;
+        const idUsuarioLead: string = lead.data().id_usuario;
 
         if (
-          nome.trim().toLocaleLowerCase().includes(texto.toLocaleLowerCase()) 
+          (nome.trim().toLocaleLowerCase().includes(texto.toLocaleLowerCase()) 
           || email.trim().toLocaleLowerCase().includes(texto.toLocaleLowerCase()) 
-          || telefone.trim().toLocaleLowerCase().includes(texto.toLocaleLowerCase())) {
+          || telefone.trim().toLocaleLowerCase().includes(texto.toLocaleLowerCase()))
+          && idUsuarioLead === usuarioLogadoApp.id) {
           console.log("Adicionar o lead " + nome);
           leads.push({
             id: lead.id ?? "",

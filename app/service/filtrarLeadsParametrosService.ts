@@ -2,11 +2,14 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import FiltroLeadsType from "../types/filtroLeads";
 import { Lead, TipoPessoaLead } from "../types/lead";
+import { Usuario } from "../types/usuario";
+import { getUsuarioLogadoApp } from "../utils/getUsuarioLogado";
 
 const filtrarLeadsParametrosService = async (filtro: FiltroLeadsType) => {
 
   try {
     const leads: Array<Lead> = [];
+    const usuarioLogadoApp: Usuario = await getUsuarioLogadoApp();
 
     const snapshot = await getDocs(collection(db, "leads"));
 
@@ -16,6 +19,7 @@ const filtrarLeadsParametrosService = async (filtro: FiltroLeadsType) => {
         const email: string = lead.data().email;
         const telefone: string = lead.data().telefone;
         const documento: string = lead.data().tipo_pessoa === "pf" ? lead.data().cpf : lead.data().cnpj;
+        const idUsuarioLead: string = lead.data().id_usuario;
 
         let filtrado: boolean = false;
 
@@ -39,7 +43,8 @@ const filtrarLeadsParametrosService = async (filtro: FiltroLeadsType) => {
           filtrado = true;
         }
 
-        if (filtrado) {
+        // só filtrar os leads do usuário logado
+        if (filtrado && usuarioLogadoApp.id === idUsuarioLead) {
           console.log("Lead filtrado: " + nome);
           leads.push({
             id: lead.id ?? "",

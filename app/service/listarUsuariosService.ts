@@ -1,11 +1,13 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Usuario } from "../types/usuario";
+import { getUsuarioLogadoApp } from "../utils/getUsuarioLogado";
 
 // listar os usuários ativos
 const listarUsuariosAtivosService = async () => {
 
   try {
+    const usuarioLogadoApp: Usuario = await getUsuarioLogadoApp();
     const usuariosRef = collection(db, "usuarios");
     const snapshot = await getDocs(usuariosRef);
     
@@ -18,7 +20,7 @@ const listarUsuariosAtivosService = async () => {
 
     snapshot.forEach((usuario) => {
       
-      if (usuario.data().ativo) {
+      if (usuario.data().ativo && usuario.id != usuarioLogadoApp.id) {
         usuarios.push({
           id: usuario.id ?? "",
           ativo: usuario.data().ativo,
