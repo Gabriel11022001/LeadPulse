@@ -12,7 +12,7 @@ import { Usuario } from "@/app/types/usuario";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 
 type StatusLeadFiltro = {
@@ -33,7 +33,7 @@ const Home = ({ navigation }: any) => {
   const [ carregandoFiltroLeadsTexto, setCarregandoFiltroLeadsTexto ] = useState<boolean>(false);
   const [ nomeUsuarioLogado, setNomeUsuarioLogado ] = useState<string>("");
   const [ possuiNotificacoes, setPossuiNotificacoes ] = useState<boolean>(false);
-  const { getUsuarioLogado } = useAuth();
+  const { getUsuarioLogado, logout } = useAuth();
 
   // listar os leads cadastrados
   const listarLeads = async () => {
@@ -193,6 +193,26 @@ const Home = ({ navigation }: any) => {
 
   }
 
+  // sair do app
+  const voltar = () => {
+    Alert.alert("Atenção!", "Deseja mesmo sair do aplicativo?", [
+      {
+        style: "destructive",
+        text: "Sim",
+        onPress: () => {
+          logout();
+
+          navigation.replace("login");
+        }
+      },
+      {
+        style: "default",
+        text: "Não",
+        onPress: () => null
+      }
+    ]);
+  }
+  
   useFocusEffect(useCallback(() => {
     obterNomeUsuarioLogado();
     listarLeads();
@@ -207,7 +227,7 @@ const Home = ({ navigation }: any) => {
       nomeUsuarioLogado={ nomeUsuarioLogado }
       possuiNotificacoes={ possuiNotificacoes }
       onVoltar={ () => {
-        
+        voltar();
       } }
       onRedirecionarAdicionarLead={ () => {
         navigation.navigate("cadastro_lead");

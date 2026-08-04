@@ -4,6 +4,8 @@ import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseUp from "@/app/components/LeadPulseUp";
 import useAuth from "@/app/hooks/useAuth";
 import { Usuario } from "@/app/types/usuario";
+import getLembrarUsuarioLogado from "@/app/utils/getLembrarUsuarioLogado";
+import lembrarDadosUsuarioLogado from "@/app/utils/lembrarDadosUsuarioLogado";
 import Feather from "@expo/vector-icons/Feather";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
@@ -61,6 +63,10 @@ const Login = ({ navigation }: any) => {
         return;
       }
 
+      if (lembrar) {
+        await lembrarDadosUsuarioLogado(usuarioLogado.email, true);
+      }
+
       // redirecionar o usuário para a tela home do app
       navigation.replace("main");
     } catch (e) {
@@ -87,6 +93,21 @@ const Login = ({ navigation }: any) => {
    * as credenciais para fazer login
    */
   const validarOptouSalvarCredenciaisLogin = async () => {
+
+    try {
+      const lembrarCredenciais: { lembrar: boolean, email: string } = await getLembrarUsuarioLogado();
+      
+      if (lembrarCredenciais.lembrar) {
+        setLembrar(true);
+        setEmail(lembrarCredenciais.email);
+      } else {
+        setLembrar(false);
+        setEmail("");
+      }
+
+    } catch (e) {
+      console.log("Erro: " + e);
+    }
 
   }
 

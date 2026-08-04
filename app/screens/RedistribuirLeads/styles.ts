@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderStyle: "solid",
     borderWidth: 2,
-    borderColor: "#f1f1f1",
+    borderColor: config.corBordas,
     borderRadius: 20
   },
   nome: {
@@ -107,7 +107,8 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f1f1f1"
+    backgroundColor: "#f1f1f1",
+    borderRadius: 20
   },
   itemUsuario: {
     backgroundColor: "#fff",
