@@ -2,11 +2,14 @@ import AlertaErroGeral from "@/app/components/AlertaErroGeral";
 import AnotacoesLeadLista from "@/app/components/AnotacoesLeadLista";
 import Botao, { TipoBotao } from "@/app/components/Botao";
 import DadoDetalheLead, { TipoDadoDetalheLead } from "@/app/components/DadoDetalheLead";
+import DialogAlterarStatus from "@/app/components/DialogAlterarStatus";
 import DialogConfirmar from "@/app/components/DialogConfirmar";
 import LeadPulseTela from "@/app/components/LeadPulseTela";
 import Loader from "@/app/components/Loader";
 import MenuTopo, { TipoTela } from "@/app/components/MenuTopo";
+import config from "@/app/config";
 import useAuth from "@/app/hooks/useAuth";
+import alterarStatusLeadService from "@/app/service/alterarStatusLeadService";
 import buscarLeadPeloIdService from "@/app/service/buscarLeadPeloIdService";
 import cadastrarAnotacaoService from "@/app/service/cadastrarAnotacaoService";
 import { deletarAnotacaoService } from "@/app/service/deletarAnotacaoService";
@@ -15,10 +18,12 @@ import { listarAnotacoesService } from "@/app/service/listarAnotacoesService";
 import { Anotacao, Lead, TipoPessoaLead } from "@/app/types/lead";
 import { Usuario } from "@/app/types/usuario";
 import { getDataAtual } from "@/app/utils/getDataAtual";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Zocial from '@expo/vector-icons/Zocial';
 import { useFocusEffect } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
 import { useCallback, useEffect, useState } from "react";
-import { Linking, ScrollView, View } from "react-native";
+import { Alert, Linking, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styles from "./styles";
 
 // tela com detalhes do lead
@@ -39,6 +44,8 @@ const DetalhesLead = ({ navigation, route }: any) => {
   const [ anotacao, setAnotacao ] = useState<string>("");
   const [ carregandoDeletarAnotacao, setCarregandoDeletarAnotacao ] = useState<boolean>(false);
   const [ carregandoDeletarLead, setCarregandoDeletarLead ] = useState<boolean>(false);
+  const [ apresentarDialogAlterarStatus, setApresentarDialogAlterarStatus ] = useState<boolean>(false);
+  const [ carregandoAlterarStatus, setCarregandoAlterarStatus ] = useState<boolean>(false);
 
   // buscar o lead pelo id
   const buscarLeadPeloId = async () => {
@@ -246,6 +253,46 @@ const DetalhesLead = ({ navigation, route }: any) => {
     
   }
 
+  // alterar o status do lead no servidor
+  const alterarStatusLead = async (statusSelecionado: string) => {
+
+    try {
+      
+      if (statusSelecionado === lead?.status) {
+        // não precisa alterar, apresentar notificação para o usuário
+        Alert.alert("Atenção!", "O status selecionado é o mesmo que está atribuído atualmente ao lead, não é necessário atualizar!", [
+          {
+            style: "default",
+            text: "OK",
+            onPress: () => {}
+          }
+        ]);
+      } else {
+        setCarregandoAlterarStatus(true);
+        console.log("Alterando o status do lead para: " + statusSelecionado);
+
+        await alterarStatusLeadService(lead?.id ?? "", statusSelecionado);
+
+        setCarregandoAlterarStatus(false);
+
+        Alert.alert("Atenção!", "O status do lead foi alterado com sucesso!", [
+          {
+            style: "default",
+            text: "OK",
+            onPress: () => {
+              setApresentarDialogAlterarStatus(false);
+              buscarLeadPeloId();
+            }
+          }
+        ]);
+      }
+
+    } catch (e) {
+      console.log("Erro ao tentar-se atualizar o status do lead: " + e);
+    }
+
+  }
+
   useEffect(() => {
 
     if (idAnotacaoExcluir != "") {
@@ -262,12 +309,49 @@ const DetalhesLead = ({ navigation, route }: any) => {
 
   }, [ apresentarAnotacoes ]);
 
+  const getStatusLeadNome = (): string => {
+
+    if (lead?.status) {
+
+      if (lead.status === "qualificado") {
+
+        return "Qualificado";
+      }
+
+      if (lead.status === "desqualificado") {
+
+        return "Desqualificado";
+      }
+
+      if (lead.status === "cliente") {
+
+        return "Cliente";
+      }
+
+      if (lead.status === "aguardando_qualificacao") {
+
+        return "Aguardando Qualificação";
+      }
+
+    }
+
+    return "";
+  }
+
   useFocusEffect(useCallback(() => {
     // consultar o lead pelo id no servidor
     buscarLeadPeloId();
   }, []));
 
   return <LeadPulseTela>
+    <DialogAlterarStatus
+      apresentar={ apresentarDialogAlterarStatus }
+      carregandoAlterarStatus={ carregandoAlterarStatus }
+      statusAtual={ lead?.status ?? "" }
+      onAlterarStatus={ (statusSelecionado: string) => {
+        alterarStatusLead(statusSelecionado);
+      } }
+      onFechar={ () => { setApresentarDialogAlterarStatus(false); } } />
     { /** dialog para o usuário confirmar a deleção da anotação do lead */ }
     <DialogConfirmar
       apresentar={ apresentarDialogConfirmarDeletarAnotacao }
@@ -352,6 +436,24 @@ const DetalhesLead = ({ navigation, route }: any) => {
           titulo="Endereço"
           valor={ (lead?.endereco && `${ lead.endereco.logradouro }, ${ lead.endereco.bairro }, ${ lead.endereco.numero != "" ? lead.endereco.numero : "S/N" }, ${ lead.endereco.cidade } - ${ lead.endereco.estado }`) ?? "" }
           tipoDetalhe={ TipoDadoDetalheLead.endereco } />
+      </View>
+      { /** container com o botão para alterar o status do lead */ }
+      <View style={ styles.container }>
+        <View style={ styles.containerTopoStatus }>
+          <Zocial name="statusnet" size={ 25 } color="black" />
+          <Text style={ styles.txtTituloStatusLead }>Status do Lead</Text>
+        </View>
+        <View style={ styles.containerCorpoStatus }>
+          { /** status do lead */ }
+          <Text style={ styles.txtStatusLead }>{ getStatusLeadNome() }</Text>
+          { /** botão para alterar o status do lead */ }
+          <TouchableOpacity onPress={ () => {
+            setApresentarDialogAlterarStatus(true);
+            setCarregandoAlterarStatus(false);
+          } }>
+            <AntDesign name="edit" size={ 30 } color={ config.corPrimaria } />
+          </TouchableOpacity>
+        </View>
       </View>
       { /** origem do lead */ }
       <View style={ styles.container }>

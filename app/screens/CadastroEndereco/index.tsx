@@ -8,10 +8,11 @@ import useLeadPulse from "@/app/hooks/useLeadPulse";
 import cadastrarLeadService from "@/app/service/cadastrarLeadService";
 import consultarCidadesPeloEstadoService, { Cidade } from "@/app/service/consultarCidadesPeloEstadoService";
 import consultarEnderecoPeloCepService from "@/app/service/consultarEnderecoPeloCepService";
+import editarLeadService from "@/app/service/editarLeadService";
 import { Endereco, Lead, TipoPessoaLead } from "@/app/types/lead";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { ScrollView } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 
 interface EstadoBrasil {
 
@@ -89,12 +90,14 @@ const CadastroEndereco = ({ navigation }: any) => {
 
   // cadastrar o lead
   const cadastrar = async (lead: Lead) => {
+    console.log("Cadastrando o lead na base de dados...");
     await cadastrarLeadService(lead);
   }
 
   // editar o lead
   const editar = async (lead: Lead) => {
-    
+    console.log("Editando o lead na base de dados...");
+    await editarLeadService(lead);
   }
 
   // finalizar cadastro/edição do lead
@@ -143,7 +146,10 @@ const CadastroEndereco = ({ navigation }: any) => {
         await editar(leadDadosAtualizados);
       }
 
+      // apresentar alerta de sucesso para o usuário
+
       // redirecionar o usuário para a tela de detalhes do lead
+      navigation.replace("detalhes_lead", { idLeadVisualizar: lead?.id ?? "" });
     } catch (e) {
       setErroGeral(`Erro ao tentar-se salvar o lead: ` + e);
     } finally {
@@ -337,90 +343,95 @@ const CadastroEndereco = ({ navigation }: any) => {
       onVoltar={ () => {
         voltar();
       } } />
-    <ScrollView showsVerticalScrollIndicator={ false }>
-      { /** campo para informar o cep do lead */ }
-      <Campo
-        valor={ cep }
-        titulo="CEP"
-        placeholder="00000-000"
-        habilitado={ !carregando && !carregandoConsultarEndereco }
-        erro={ erroCep }
-        tipoCampo={ TipoCampo.cep }
-        consultando={ carregandoConsultarEndereco }
-        onAlterarValor={ (cepDigitado: string) => {
-          onDigitarCep(cepDigitado);
-        } } />
-      { /** campo para informar o logradouro */ }
-      <Campo
-        valor={ logradouro }
-        titulo="Logradouro"
-        placeholder="Digite o logradouro..."
-        habilitado={ true }
-        erro={ erroLogradouro }
-        tipoCampo={ TipoCampo.default }
-        onAlterarValor={ (logradouroDigitado: string) => {
-          onDigitarLogradouro(logradouroDigitado);
-        } } />
-      { /** campo para o usuário informar o complemento */ }
-      <Campo
-        valor={ complemento }
-        erro={ erroComplemento }
-        habilitado={ true }
-        placeholder="Digite o complemento..."
-        tipoCampo={ TipoCampo.default }
-        titulo="Complemento(opcional)"
-        onAlterarValor={ (complementoDigitado: string) => {
-          onDigitarComplemento(complementoDigitado);
-        } } />
-      { /** select para o usuário selecionar o estado */ }
-      <Select
-        titulo="Estado"
-        opcoes={ estadosBrasilOpcoes }
-        opcaoSelecionada={ estadosBrasilOpcoes.find(e => e.valor === uf) ?? estadosBrasilOpcoes[ 0 ] }
-        onSelecionarOpcao={ (estadoSelecionado: SelectOpcao) => {
-          consultarCidadesEstado(estadoSelecionado.valor);
-        } } />
-      { /** select para o usuário selecionar a cidade */ }
-      <Select
-        opcoes={ cidades ?? [] }
-        titulo="Cidade"
-        opcaoSelecionada={ cidades.length > 0 ? (cidades.find(c => c.valor === cidade) ?? cidades[ 0 ]) : null }
-        onSelecionarOpcao={ (cidadeSelecionada: SelectOpcao) => {
-          setCidade(cidadeSelecionada.valor);
-        } } />
-      { /** campo para o usuário informar o bairro */ }
-      <Campo
-        valor={ bairro }
-        erro={ erroBairro }
-        habilitado={ true }
-        placeholder="Digite o bairro..."
-        tipoCampo={ TipoCampo.default }
-        titulo="Bairro"
-        onAlterarValor={ (bairroDigitado: string) => {
-          onDigitarBairro(bairroDigitado);
-        } } />
-      <Botao
-        titulo="Finalizar"
-        carregando={ carregando }
-        onExecutar={ finalizar }
-        habilitado={
-          cep != ""
-          && logradouro != ""
-          && cidade != ""
-          && bairro != ""
-          && uf != ""
-          && erroCep === ""
-          && erroComplemento ===  ""
-          && erroLogradouro === ""
-          && erroCidade === ""
-          && erroBairro === ""
-          && erroNumero === ""
-        } />
-      <BotaoCancelar
-        titulo="Cancelar"
-        margemBottom={ 50 }
-        onCancelar={ cancelar } />
-    </ScrollView>
+    <KeyboardAvoidingView
+      style={ { flex: 1 } }
+      keyboardVerticalOffset={ 20 }
+      behavior={ Platform.OS === "ios" ? "padding" : "height" }>
+      <ScrollView showsVerticalScrollIndicator={ false }>
+        { /** campo para informar o cep do lead */ }
+        <Campo
+          valor={ cep }
+          titulo="CEP"
+          placeholder="00000-000"
+          habilitado={ !carregando && !carregandoConsultarEndereco }
+          erro={ erroCep }
+          tipoCampo={ TipoCampo.cep }
+          consultando={ carregandoConsultarEndereco }
+          onAlterarValor={ (cepDigitado: string) => {
+            onDigitarCep(cepDigitado);
+          } } />
+        { /** campo para informar o logradouro */ }
+        <Campo
+          valor={ logradouro }
+          titulo="Logradouro"
+          placeholder="Digite o logradouro..."
+          habilitado={ true }
+          erro={ erroLogradouro }
+          tipoCampo={ TipoCampo.default }
+          onAlterarValor={ (logradouroDigitado: string) => {
+            onDigitarLogradouro(logradouroDigitado);
+          } } />
+        { /** campo para o usuário informar o complemento */ }
+        <Campo
+          valor={ complemento }
+          erro={ erroComplemento }
+          habilitado={ true }
+          placeholder="Digite o complemento..."
+          tipoCampo={ TipoCampo.default }
+          titulo="Complemento(opcional)"
+          onAlterarValor={ (complementoDigitado: string) => {
+            onDigitarComplemento(complementoDigitado);
+          } } />
+        { /** select para o usuário selecionar o estado */ }
+        <Select
+          titulo="Estado"
+          opcoes={ estadosBrasilOpcoes }
+          opcaoSelecionada={ estadosBrasilOpcoes.find(e => e.valor === uf) ?? estadosBrasilOpcoes[ 0 ] }
+          onSelecionarOpcao={ (estadoSelecionado: SelectOpcao) => {
+            consultarCidadesEstado(estadoSelecionado.valor);
+          } } />
+        { /** select para o usuário selecionar a cidade */ }
+        <Select
+          opcoes={ cidades ?? [] }
+          titulo="Cidade"
+          opcaoSelecionada={ cidades.length > 0 ? (cidades.find(c => c.valor === cidade) ?? cidades[ 0 ]) : null }
+          onSelecionarOpcao={ (cidadeSelecionada: SelectOpcao) => {
+            setCidade(cidadeSelecionada.valor);
+          } } />
+        { /** campo para o usuário informar o bairro */ }
+        <Campo
+          valor={ bairro }
+          erro={ erroBairro }
+          habilitado={ true }
+          placeholder="Digite o bairro..."
+          tipoCampo={ TipoCampo.default }
+          titulo="Bairro"
+          onAlterarValor={ (bairroDigitado: string) => {
+            onDigitarBairro(bairroDigitado);
+          } } />
+        <Botao
+          titulo="Finalizar"
+          carregando={ carregando }
+          onExecutar={ finalizar }
+          habilitado={
+            cep != ""
+            && logradouro != ""
+            && cidade != ""
+            && bairro != ""
+            && uf != ""
+            && erroCep === ""
+            && erroComplemento ===  ""
+            && erroLogradouro === ""
+            && erroCidade === ""
+            && erroBairro === ""
+            && erroNumero === ""
+          } />
+        <BotaoCancelar
+          titulo="Cancelar"
+          margemBottom={ 50 }
+          onCancelar={ cancelar } />
+      </ScrollView>
+    </KeyboardAvoidingView>
   </LeadPulseTela>
 }
 

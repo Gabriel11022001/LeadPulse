@@ -4,10 +4,12 @@ import Campo, { TipoCampo } from "@/app/components/Campo";
 import LeadPulseUp from "@/app/components/LeadPulseUp";
 import useAuth from "@/app/hooks/useAuth";
 import { Usuario } from "@/app/types/usuario";
+import getLembrarUsuarioLogado from "@/app/utils/getLembrarUsuarioLogado";
+import lembrarDadosUsuarioLogado from "@/app/utils/lembrarDadosUsuarioLogado";
 import Feather from "@expo/vector-icons/Feather";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./styles";
 
@@ -61,8 +63,12 @@ const Login = ({ navigation }: any) => {
         return;
       }
 
+      if (lembrar) {
+        await lembrarDadosUsuarioLogado(usuarioLogado.email, true);
+      }
+
       // redirecionar o usuário para a tela home do app
-      navigation.replace("home");
+      navigation.replace("main");
     } catch (e) {
       // apresentar alerta de erro para o usuário
       setErroGeral(`Erro ao tentar-se efetuar o login: ${ e }`);
@@ -88,6 +94,21 @@ const Login = ({ navigation }: any) => {
    */
   const validarOptouSalvarCredenciaisLogin = async () => {
 
+    try {
+      const lembrarCredenciais: { lembrar: boolean, email: string } = await getLembrarUsuarioLogado();
+      
+      if (lembrarCredenciais.lembrar) {
+        setLembrar(true);
+        setEmail(lembrarCredenciais.email);
+      } else {
+        setLembrar(false);
+        setEmail("");
+      }
+
+    } catch (e) {
+      console.log("Erro: " + e);
+    }
+
   }
 
   useFocusEffect(useCallback(() => {
@@ -104,78 +125,83 @@ const Login = ({ navigation }: any) => {
           setErroGeral("");
         } } />
       <ScrollView showsVerticalScrollIndicator={ false }>
-        <View style={ styles.conteudo }>
-          <LeadPulseUp />
-          <Text style={ styles.titulo }>Seja bem vindo</Text>
-          <Text style={ styles.subtitulo }>Entre para gerenciar seus leads</Text>
-          <View style={ styles.formLogin }>
-            { /** campo para o usuário informar o e-mail */ }
-            <Campo
-              campoLogin={ true }
-              valor={ email }
-              onAlterarValor={ (novoEmailDigitado: string) => {
-                onDigitarEmail(novoEmailDigitado);
-              } }
-              erro={ erroEmail }
-              habilitado={ !carregandoAuth }
-              placeholder="seu@email.com"
-              tipoCampo={ TipoCampo.email }
-              titulo="E-mail" />
-            { /** campo para o usuário informar a senha */ }
-            <Campo
-              campoLogin={ true }
-              valor={ senha }
-              onAlterarValor={ (novaSenhaDigitada: string) => {
-                onDigitarSenha(novaSenhaDigitada);
-              } }
-              erro={ erroSenha }
-              habilitado={ !carregandoAuth }
-              placeholder="******"
-              tipoCampo={ TipoCampo.senha }
-              titulo="Senha"
-              senhaVisivel={ senhaVisivel }
-              onVisualizarSenha={ () => {
-                setSenhaVisivel(!senhaVisivel);
-              } } />
-            <View style={ styles.containerLembrarEsqueciSenha }>
-              { /** opção de recordar a senha */ }
-              <View style={ styles.containerLembrar }>
-                <Pressable style={ [
-                  styles.checkBoxLembrar,
-                  lembrar && styles.checkBoxLembrarHabilitado
-                ] } onPress={ () => {
-                  salvarDadosLoginLocalmente();
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={ 30 }
+          style={ { flex: 1 } }
+          behavior={ Platform.OS === "ios" ? "padding" : "height" }>
+          <View style={ styles.conteudo }>
+            <LeadPulseUp />
+            <Text style={ styles.titulo }>Seja bem vindo</Text>
+            <Text style={ styles.subtitulo }>Entre para gerenciar seus leads</Text>
+            <View style={ styles.formLogin }>
+              { /** campo para o usuário informar o e-mail */ }
+              <Campo
+                campoLogin={ true }
+                valor={ email }
+                onAlterarValor={ (novoEmailDigitado: string) => {
+                  onDigitarEmail(novoEmailDigitado);
+                } }
+                erro={ erroEmail }
+                habilitado={ !carregandoAuth }
+                placeholder="seu@email.com"
+                tipoCampo={ TipoCampo.email }
+                titulo="E-mail" />
+              { /** campo para o usuário informar a senha */ }
+              <Campo
+                campoLogin={ true }
+                valor={ senha }
+                onAlterarValor={ (novaSenhaDigitada: string) => {
+                  onDigitarSenha(novaSenhaDigitada);
+                } }
+                erro={ erroSenha }
+                habilitado={ !carregandoAuth }
+                placeholder="******"
+                tipoCampo={ TipoCampo.senha }
+                titulo="Senha"
+                senhaVisivel={ senhaVisivel }
+                onVisualizarSenha={ () => {
+                  setSenhaVisivel(!senhaVisivel);
+                } } />
+              <View style={ styles.containerLembrarEsqueciSenha }>
+                { /** opção de recordar a senha */ }
+                <View style={ styles.containerLembrar }>
+                  <Pressable style={ [
+                    styles.checkBoxLembrar,
+                    lembrar && styles.checkBoxLembrarHabilitado
+                  ] } onPress={ () => {
+                    salvarDadosLoginLocalmente();
+                  } }>
+                    { lembrar && <Feather name="check" size={ 17 } color="#fff" /> }
+                  </Pressable>
+                  <Text>Lembrar-me</Text>
+                </View>
+                { /** botão para recuperar senha */ }
+                <Pressable onPress={ () => {
+                  // redirecionar a tela de recuperação de senha
                 } }>
-                  { lembrar && <Feather name="check" size={ 17 } color="#fff" /> }
+                  <Text style={ styles.txtEsqueceuSenha }>Esqueceu a senha?</Text>
                 </Pressable>
-                <Text>Lembrar-me</Text>
               </View>
-              { /** botão para recuperar senha */ }
-              <Pressable onPress={ () => {
-                // redirecionar a tela de recuperação de senha
-              } }>
-                <Text style={ styles.txtEsqueceuSenha }>Esqueceu a senha?</Text>
-              </Pressable>
-            </View>
-            { /** botão para efetuar login */ }
-            <Botao 
-              titulo="Entrar"
-              botaoLogin={ true }
-              habilitado={ !carregandoAuth && email != "" && senha != "" && erroEmail === "" && erroSenha === "" }
-              carregando={ carregandoAuth } 
-              onExecutar={ () => {
-                efetuarLogin();
-              } } />
-            <View style={ styles.containerNaoTemConta }>
-              <Text>Ainda não têm uma conta?</Text>
-              <Pressable onPress={ () => {
-                navigation.navigate("cadastro_perfil")
-              } }>
-                <Text style={ styles.txtCadastrese }>Cadastre-se</Text>
-              </Pressable>
+              { /** botão para efetuar login */ }
+              <Botao 
+                titulo="Entrar"
+                botaoLogin={ true }
+                habilitado={ !carregandoAuth && email != "" && senha != "" && erroEmail === "" && erroSenha === "" }
+                carregando={ carregandoAuth } 
+                onExecutar={ () => {
+                  efetuarLogin();
+                } } />
+              <View style={ styles.containerNaoTemConta }>
+                <Text>Ainda não têm uma conta?</Text>
+                <Pressable onPress={ () => {
+                  navigation.navigate("cadastro_perfil")
+                } }>
+                  <Text style={ styles.txtCadastrese }>Cadastre-se</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
   );

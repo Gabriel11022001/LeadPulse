@@ -5,12 +5,14 @@ import MenuHome from "@/app/components/MenuHome";
 import config from "@/app/config";
 import useAuth from "@/app/hooks/useAuth";
 import filtrarLeadsService from "@/app/service/filtrarLeadsService";
+import listarNotificacoesService from "@/app/service/listarNoficacoesService";
 import { Lead } from "@/app/types/lead";
+import { Notificacao } from "@/app/types/notificacao";
 import { Usuario } from "@/app/types/usuario";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 
 type StatusLeadFiltro = {
@@ -30,7 +32,8 @@ const Home = ({ navigation }: any) => {
   const [ statusSelecionado, setStatusSelecionado ] = useState<StatusLeadFiltro | null>(null);
   const [ carregandoFiltroLeadsTexto, setCarregandoFiltroLeadsTexto ] = useState<boolean>(false);
   const [ nomeUsuarioLogado, setNomeUsuarioLogado ] = useState<string>("");
-  const { getUsuarioLogado } = useAuth();
+  const [ possuiNotificacoes, setPossuiNotificacoes ] = useState<boolean>(false);
+  const { getUsuarioLogado, logout } = useAuth();
 
   // listar os leads cadastrados
   const listarLeads = async () => {
@@ -49,6 +52,8 @@ const Home = ({ navigation }: any) => {
         status: "Todos",
         quantidade: leadsBase.length
       });
+
+      await validarPossuiNotificacoes();
     } catch (e) {
 
     } finally {
@@ -58,8 +63,34 @@ const Home = ({ navigation }: any) => {
   }
 
   // filtrar leads por status
-  const filtrarLeadsPorStatus = (status: StatusLeadFiltro) => {
+  const filtrarLeadsPorStatus = async (status: StatusLeadFiltro) => {
     setStatusSelecionado(status);
+    let statusFiltrar: string = "";
+    const statusFiltro: string = status.status.toLocaleLowerCase();
+
+    if (statusFiltro === "todos") {
+      statusFiltrar = "todos";
+    } else if (statusFiltro === "em qualificação") {
+      statusFiltrar = "aguardando_qualificacao";
+    } else if (statusFiltro === "qualificado") {
+      statusFiltrar = "qualificado";
+    } else if (statusFiltro === "desqualificado") {
+      statusFiltrar = "desqualificado";
+    } else {
+      statusFiltrar = "cliente";
+    }
+
+    console.log("Filtrar leads: " + statusFiltrar);
+
+    setCarregando(true);
+
+    const leadsFiltrados: Array<Lead> = await filtrarLeadsService({
+      status: statusFiltrar
+    });
+
+    setCarregando(false);
+
+    setLeads(leadsFiltrados);
   }
 
   const calcularLeadsPorStatus = (leads: Array<Lead>): void => {
@@ -115,6 +146,73 @@ const Home = ({ navigation }: any) => {
 
   }
 
+  const getNotificacoesUltimosCincoDias = (
+    notificacoes: Array<Notificacao>
+  ): Array<Notificacao> => {
+    const agora = new Date();
+
+    const dataLimite = new Date();
+    dataLimite.setDate(agora.getDate() - 5);
+
+    return notificacoes.filter((notificacao) => {
+      const [data, hora] = notificacao.dataCadastro.split(" às ");
+
+      const [dia, mes, ano] = data.split("/").map(Number);
+      const [horas, minutos] = hora.split(":").map(Number);
+
+      const dataNotificacao = new Date(
+        ano,
+        mes - 1,
+        dia,
+        horas,
+        minutos
+      );
+
+      return dataNotificacao >= dataLimite && dataNotificacao <= agora;
+    });
+  };
+
+  // validar se o usuário possui notificações novas
+  const validarPossuiNotificacoes = async () => {
+    setPossuiNotificacoes(false);
+
+    try {
+      const notificacoes: Notificacao[] = await listarNotificacoesService();
+
+      if (notificacoes.length > 0) {
+        
+        if (getNotificacoesUltimosCincoDias(notificacoes).length > 0) {
+          setPossuiNotificacoes(true);
+        }
+
+      }
+
+    } catch (e) {
+      // apresentar alerta de erro
+    }
+
+  }
+
+  // sair do app
+  const voltar = () => {
+    Alert.alert("Atenção!", "Deseja mesmo sair do aplicativo?", [
+      {
+        style: "destructive",
+        text: "Sim",
+        onPress: () => {
+          logout();
+
+          navigation.replace("login");
+        }
+      },
+      {
+        style: "default",
+        text: "Não",
+        onPress: () => null
+      }
+    ]);
+  }
+  
   useFocusEffect(useCallback(() => {
     obterNomeUsuarioLogado();
     listarLeads();
@@ -122,14 +220,14 @@ const Home = ({ navigation }: any) => {
 
   return <LeadPulseTela>
     { /** loader de carregamento */ }
-    <Loader carregando={ carregando } msgLoader="Consultando os leads, aguarde..." />
+    <Loader carregando={ carregando } />
     { /** cabeçalho com botão para adicionar lead novo */ }
     <MenuHome
       leadsEncontrados={ leads.length ?? 0 }
       nomeUsuarioLogado={ nomeUsuarioLogado }
-      possuiNotificacoes={ true }
+      possuiNotificacoes={ possuiNotificacoes }
       onVoltar={ () => {
-        
+        voltar();
       } }
       onRedirecionarAdicionarLead={ () => {
         navigation.navigate("cadastro_lead");

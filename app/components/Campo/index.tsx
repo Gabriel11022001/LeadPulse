@@ -128,6 +128,7 @@ const Campo = ({
       <TextInput
         style={ styles.campoConteudo }
         value={ valor }
+        autoCapitalize="none"
         onChangeText={ (valorDigitado: string) => {
           const textoFormatado: string = onAplicarMascaraCampo(valorDigitado);
 

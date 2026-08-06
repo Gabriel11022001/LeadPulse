@@ -1,5 +1,5 @@
-import config from "@/app/config";
 import { ActivityIndicator, Text, View } from "react-native";
+import LeadPulseUp from "../LeadPulseUp";
 import styles from "./styles";
 
 interface LoaderProps {
@@ -18,8 +18,11 @@ const Loader = ({ carregando, msgLoader }: LoaderProps) => {
   }
 
   return <View style={ styles.containerLoader }>
-    <ActivityIndicator color={ config.corPrimaria } size={ 60 } />
-    <Text style={ styles.txtLoader }>{ msgLoader }</Text>
+    <LeadPulseUp />
+    <ActivityIndicator color="#fff" size={ 40 } style={ { marginTop: 30 } } />
+    { msgLoader ? <Text style={ styles.txtLoader }>{ msgLoader }</Text> : <Text style={ styles.txtLoader }>
+      Carregando, aguarde...
+    </Text> }
   </View>
 }
 

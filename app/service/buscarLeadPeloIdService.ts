@@ -6,7 +6,7 @@ import { Lead, TipoPessoaLead } from "../types/lead";
 const buscarLeadPeloIdService = async (id: string) => {
 
   try {
-     const leadRef = doc(db, "leads", id);
+    const leadRef = doc(db, "leads", id);
 
     const snapshot = await getDoc(leadRef);
 

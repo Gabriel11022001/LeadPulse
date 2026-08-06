@@ -72,7 +72,11 @@ const useAuth = () => {
   
   // realizar logout do usuário
   const logout = async () => {
+    await SecureStore.deleteItemAsync("id_usuario_logado");
+    await SecureStore.deleteItemAsync("nome_completo_usuario_logado");
+    await SecureStore.deleteItemAsync("email_usuario_logado");
 
+    console.log("Logout efetuado com sucesso!");
   }
 
   return {

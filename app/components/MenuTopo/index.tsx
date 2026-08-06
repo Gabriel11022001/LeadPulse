@@ -1,5 +1,7 @@
 import config from "@/app/config";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, Text, View } from "react-native";
@@ -8,7 +10,9 @@ import styles from "./styles";
 export enum TipoTela {
 
   cadastroLead,
-  perfil
+  perfil,
+  notificacoes,
+  gestaoLeads
 
 }
 
@@ -18,6 +22,8 @@ interface MenuTopoProps {
   subtitulo?: string;
   onVoltar?: () => void;
   tela: TipoTela;
+  onAbrirFiltro?: () => void;
+  onClickRedistribuirLeads?: () => void;
   
 }
 
@@ -26,7 +32,9 @@ const MenuTopo = ({
   titulo,
   subtitulo,
   onVoltar,
-  tela
+  tela,
+  onAbrirFiltro,
+  onClickRedistribuirLeads
 }: MenuTopoProps) => {
 
   const obterIconeTela = () => {
@@ -34,6 +42,11 @@ const MenuTopo = ({
     if (tela === TipoTela.cadastroLead) {
 
       return <Ionicons name="person-outline" size={ 30 } color={ config.corPrimaria } />;
+    }
+
+    if (tela === TipoTela.gestaoLeads) {
+      
+      return <Feather name="filter" size={ 30 } color={ config.corPrimaria } />;
     }
 
     return <AntDesign name="menu" size={ 30 } color={ config.corPrimaria } />;
@@ -56,13 +69,28 @@ const MenuTopo = ({
     </View>
     <View style={ styles.containerBaixo }>
       { /** titulo e subtitulo */ }
-      <View>
+      <View style={ {
+        maxWidth: "60%"
+      } }>
         <Text style={ styles.tituloTela }>{ titulo }</Text>
         { subtitulo && <Text style={ styles.subtitulo }>{ subtitulo }</Text> }
       </View>
-      <View style={ styles.containerIconeTela }>
+      { tela === TipoTela.gestaoLeads ? <View>
+        { /** botão para acionar o filtro */ }
+        <Pressable style={ styles.containerIconeTela } onPress={ onAbrirFiltro }>
+          { obterIconeTela() }
+        </Pressable>
+        <Pressable style={ [
+          styles.containerIconeTela,
+          {
+            marginTop: 15
+          }
+        ] } onPress={ onClickRedistribuirLeads }>
+          <FontAwesome6 name="person-chalkboard" size={ 30 } color={ config.corPrimaria } />
+        </Pressable>
+      </View> : <View style={ styles.containerIconeTela }>
         { obterIconeTela() }
-      </View>
+      </View> }
     </View>
   </LinearGradient>
 }
